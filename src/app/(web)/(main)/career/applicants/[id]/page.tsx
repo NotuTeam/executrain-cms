@@ -25,7 +25,11 @@ import dayjs from "dayjs";
 import Notification from "@/components/Notification";
 import { useDebounce } from "@/hooks/useDebounce";
 
-import { useApplicants, useUpdateApplicantStatus, useDeleteApplicant } from "../../hook";
+import {
+  useApplicants,
+  useUpdateApplicantStatus,
+  useDeleteApplicant,
+} from "../../hook";
 
 const APPLICATION_STATUS = [
   { value: "All", label: "All Status" },
@@ -71,7 +75,8 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
 
   const { mutate: updateStatus, isPending: isUpdating } =
     useUpdateApplicantStatus();
-  const { mutate: deleteApplicant, isPending: isDeleting } = useDeleteApplicant();
+  const { mutate: deleteApplicant, isPending: isDeleting } =
+    useDeleteApplicant();
 
   const applicants = useMemo(() => {
     return data?.pages?.flatMap((page: any) => page.data) || [];
@@ -104,7 +109,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
         onError: () => {
           Notification("error", "Failed to update status");
         },
-      }
+      },
     );
   };
 
@@ -129,8 +134,12 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
               <h3 className="text-lg font-semibold text-slate-100 mb-1">
                 {applicant.full_name}
               </h3>
-              <p className="text-sm text-slate-400">{applicant.current_position}</p>
-              <p className="text-sm text-slate-500">{applicant.current_company}</p>
+              <p className="text-sm text-slate-400">
+                {applicant.current_position}
+              </p>
+              <p className="text-sm text-slate-500">
+                {applicant.current_company}
+              </p>
             </div>
             <span
               className={`px-3 py-1 text-xs font-medium rounded-full ${
@@ -293,7 +302,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
       {/* Loading State */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="inline-block w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-slate-400">Loading applicants...</p>
         </div>
       ) : applicants && applicants.length > 0 ? (
@@ -384,7 +393,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
                       <option key={status.value} value={status.value}>
                         {status.label}
                       </option>
-                    )
+                    ),
                   )}
                 </select>
               </div>

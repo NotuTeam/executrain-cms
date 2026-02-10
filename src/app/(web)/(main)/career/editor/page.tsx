@@ -43,8 +43,12 @@ export default function CareerEditorPage() {
 
   const [newDescription, setNewDescription] = useState({ description: null });
   const [newRequirement, setNewRequirement] = useState({ requirement: null });
-  const [newExperianceRequirement, setNewExperianceRequirement] = useState({ experiance_requirement: null });
-  const [newApplicantQuestion, setNewApplicantQuestion] = useState({ applicant_question: null });
+  const [newExperianceRequirement, setNewExperianceRequirement] = useState({
+    experiance_requirement: null,
+  });
+  const [newApplicantQuestion, setNewApplicantQuestion] = useState({
+    applicant_question: null,
+  });
 
   useEffect(() => {
     if (existingCareer) {
@@ -112,14 +116,20 @@ export default function CareerEditorPage() {
       return;
     }
 
-    if (formAction?.experiance_requirement && formAction.experiance_requirement.length >= 10) {
+    if (
+      formAction?.experiance_requirement &&
+      formAction.experiance_requirement.length >= 10
+    ) {
       Notification("error", "Maximum 10 experience requirements allowed");
       return;
     }
 
     setFormAction((prev: any) => ({
       ...prev,
-      experiance_requirement: [...prev?.experiance_requirement, newExperianceRequirement.experiance_requirement],
+      experiance_requirement: [
+        ...prev?.experiance_requirement,
+        newExperianceRequirement.experiance_requirement,
+      ],
     }));
     setNewExperianceRequirement({ experiance_requirement: null });
     form.setFieldValue("experiance_requirement", undefined);
@@ -139,14 +149,20 @@ export default function CareerEditorPage() {
       return;
     }
 
-    if (formAction?.applicant_question && formAction.applicant_question.length >= 10) {
+    if (
+      formAction?.applicant_question &&
+      formAction.applicant_question.length >= 10
+    ) {
       Notification("error", "Maximum 10 applicant questions allowed");
       return;
     }
 
     setFormAction((prev: any) => ({
       ...prev,
-      applicant_question: [...prev?.applicant_question, newApplicantQuestion.applicant_question],
+      applicant_question: [
+        ...prev?.applicant_question,
+        newApplicantQuestion.applicant_question,
+      ],
     }));
     setNewApplicantQuestion({ applicant_question: null });
     form.setFieldValue("applicant_question", undefined);
@@ -164,12 +180,20 @@ export default function CareerEditorPage() {
   const handleSaveCareer = async (status: string) => {
     try {
       // Validate salary before saving
-      if (formAction.salary_min !== undefined && formAction.salary_min !== null && formAction.salary_min < 0) {
+      if (
+        formAction.salary_min !== undefined &&
+        formAction.salary_min !== null &&
+        formAction.salary_min < 0
+      ) {
         Notification("error", "Minimum salary cannot be less than 0");
         return;
       }
 
-      if (formAction.salary_max !== undefined && formAction.salary_max !== null && formAction.salary_max < 0) {
+      if (
+        formAction.salary_max !== undefined &&
+        formAction.salary_max !== null &&
+        formAction.salary_max < 0
+      ) {
         Notification("error", "Maximum salary cannot be less than 0");
         return;
       }
@@ -181,7 +205,10 @@ export default function CareerEditorPage() {
         formAction.salary_max !== null &&
         formAction.salary_max < formAction.salary_min
       ) {
-        Notification("error", "Maximum salary must be greater than minimum salary");
+        Notification(
+          "error",
+          "Maximum salary must be greater than minimum salary",
+        );
         return;
       }
 
@@ -479,7 +506,9 @@ export default function CareerEditorPage() {
                           <span className="text-gray-600">{exp}</span>
                           <button
                             type="button"
-                            onClick={() => handleRemoveExperianceRequirement(index)}
+                            onClick={() =>
+                              handleRemoveExperianceRequirement(index)
+                            }
                             className="p-1 hover:bg-red-100 rounded text-red-600 transition-colors"
                           >
                             <X className="w-4 h-4" />
@@ -607,14 +636,6 @@ export default function CareerEditorPage() {
                 Compensation
               </h2>
               <div className="space-y-4">
-                <InputForm
-                  type="text"
-                  name="salary_currency"
-                  label="Currency"
-                  placeholder="e.g. IDR"
-                  form={formAction}
-                  setForm={(e: any) => setFormAction(e)}
-                />
                 <div className="grid grid-cols-2 gap-4">
                   <InputForm
                     type="number"

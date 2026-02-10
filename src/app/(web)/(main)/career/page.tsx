@@ -348,7 +348,7 @@ export default function CareerPage() {
       {/* Loading State */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="inline-block w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-gray-600">Loading job postings...</p>
         </div>
       ) : careers && careers.length > 0 ? (
