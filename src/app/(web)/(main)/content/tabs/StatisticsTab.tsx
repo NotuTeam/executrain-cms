@@ -116,9 +116,9 @@ export default function StatisticsTab() {
   const getColorClasses = (color: string) => {
     const colors: any = {
       blue: {
-        bg: "bg-blue-50",
+        bg: "bg-primary-950",
         border: "border-blue-200",
-        text: "text-blue-600",
+        text: "text-primary-500",
         hover: "hover:border-blue-300",
         icon: "bg-blue-100",
       },
@@ -150,10 +150,10 @@ export default function StatisticsTab() {
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-32 bg-slate-100 rounded-xl"></div>
-        <div className="h-32 bg-slate-100 rounded-xl"></div>
-        <div className="h-32 bg-slate-100 rounded-xl"></div>
-        <div className="h-32 bg-slate-100 rounded-xl"></div>
+        <div className="h-32 bg-gray-100 rounded-xl"></div>
+        <div className="h-32 bg-gray-100 rounded-xl"></div>
+        <div className="h-32 bg-gray-100 rounded-xl"></div>
+        <div className="h-32 bg-gray-100 rounded-xl"></div>
       </div>
     );
   }
@@ -170,7 +170,7 @@ export default function StatisticsTab() {
           type="button"
           onClick={handleSubmit}
           disabled={isPending}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? (
             <>
@@ -253,7 +253,7 @@ export default function StatisticsTab() {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-slate-600">
+                  <p className="text-sm font-medium text-gray-600">
                     {stat.label}
                   </p>
 
@@ -264,7 +264,7 @@ export default function StatisticsTab() {
                           type="number"
                           value={tempValue}
                           onChange={(e) => setTempValue(e.target.value)}
-                          className="flex-1 px-4 py-2 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 text-2xl font-bold"
+                          className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 text-2xl font-bold"
                           placeholder="0"
                           autoFocus
                           onKeyDown={(e) => {
@@ -280,14 +280,14 @@ export default function StatisticsTab() {
                         <button
                           type="button"
                           onClick={() => handleSaveField(stat.field)}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                         >
                           Save
                         </button>
                         <button
                           type="button"
                           onClick={handleCancelEdit}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-200 text-gray-600 rounded-lg hover:bg-slate-300 transition-colors"
                         >
                           Cancel
                         </button>
@@ -298,7 +298,7 @@ export default function StatisticsTab() {
                       <div className={`text-4xl font-bold ${colors.text}`}>
                         {stat.value}
                       </div>
-                      <p className="text-sm text-slate-500">{stat.unit}</p>
+                      <p className="text-sm text-gray-600">{stat.unit}</p>
                     </>
                   )}
                 </div>

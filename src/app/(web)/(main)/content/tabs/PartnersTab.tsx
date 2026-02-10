@@ -114,7 +114,7 @@ export default function PartnersTab() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="animate-pulse h-40 bg-slate-100 rounded-xl"
+            className="animate-pulse h-40 bg-gray-100 rounded-xl"
           ></div>
         ))}
       </div>
@@ -124,14 +124,14 @@ export default function PartnersTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div className="flex items-center gap-3 p-4 bg-primary-950 rounded-xl border border-blue-200">
           <div>
             <h3 className="font-semibold text-blue-900">Partner Management</h3>
           </div>
         </div>
         <button
           onClick={() => setShowModal("INPUT")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add Partner
@@ -143,9 +143,9 @@ export default function PartnersTab() {
           {partners.map((partner: any) => (
             <div
               key={partner._id}
-              className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-lg transition-all"
+              className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all"
             >
-              <div className="relative h-32 bg-slate-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+              <div className="relative h-32 bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                 {partner?.logo?.url ? (
                   <Image
                     src={partner?.logo?.url}
@@ -155,10 +155,10 @@ export default function PartnersTab() {
                     className="object-contain max-h-full"
                   />
                 ) : (
-                  <Building2 className="w-12 h-12 text-slate-300" />
+                  <Building2 className="w-12 h-12 text-gray-600" />
                 )}
               </div>
-              <h3 className="font-semibold text-slate-800 text-center mb-3 truncate">
+              <h3 className="font-semibold text-gray-900 text-center mb-3 truncate">
                 {partner?.partner_name}
               </h3>
               <div className="flex gap-2">
@@ -168,7 +168,7 @@ export default function PartnersTab() {
                     setFormAction(partner);
                     form.setFieldsValue(partner);
                   }}
-                  className="flex-1 p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="flex-1 p-2 text-primary-500 hover:bg-primary-950 rounded-lg transition-colors"
                 >
                   <Edit className="w-4 h-4 mx-auto" />
                 </button>
@@ -177,7 +177,7 @@ export default function PartnersTab() {
                     setShowModal("DELETE");
                     setFormAction(partner);
                   }}
-                  className="flex-1 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="flex-1 p-2 text-red-600 hover:bg-red-950 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4 mx-auto" />
                 </button>
@@ -186,17 +186,17 @@ export default function PartnersTab() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
-          <Building2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">
+        <div className="text-center py-12 bg-gray-100 rounded-xl border border-gray-200">
+          <Building2 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No partners yet
           </h3>
-          <p className="text-slate-600 mb-6">
+          <p className="text-gray-600 mb-6">
             Start by adding your first partner
           </p>
           <button
             onClick={() => setShowModal("INPUT")}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Partner
@@ -207,7 +207,7 @@ export default function PartnersTab() {
       {showModal === "INPUT" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               {formAction?._id ? "Edit Partner" : "Add New Partner"}
             </h2>
 
@@ -224,7 +224,7 @@ export default function PartnersTab() {
 
               {formAction?.logo?.data || formAction?.logo?.url ? (
                 <div className="mb-4">
-                  <span className="block text-sm font-medium text-slate-700 mb-2">
+                  <span className="block text-sm font-medium text-gray-600 mb-2">
                     Current Logo
                   </span>
                   <div className="relative mb-5 md:col-span-2 flex items-center justify-center">
@@ -248,7 +248,7 @@ export default function PartnersTab() {
                           logo: undefined,
                         }))
                       }
-                      className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-red-50 text-red-600 transition-colors"
+                      className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-red-950 text-red-600 transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -273,7 +273,7 @@ export default function PartnersTab() {
                     setShowModal("NONE");
                     form.resetFields();
                   }}
-                  className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                   disabled={isPending}
                 >
                   Cancel
@@ -284,9 +284,9 @@ export default function PartnersTab() {
                     formAction?._id ? updatePartner() : addPartner()
                   }
                   disabled={isPending}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50"
                 >
-                  {isPending ? "Saving..." : false ? "Update" : "Create"}
+                  {isPending ? "Saving..." : false ? "Update" : "Add"}
                 </button>
               </div>
             </Form>
@@ -297,10 +297,10 @@ export default function PartnersTab() {
       {showModal === "DELETE" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               Delete Partner
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-gray-600 mb-6">
               Are you sure you want to delete this partner? This action cannot
               be undone.
             </p>
@@ -310,7 +310,7 @@ export default function PartnersTab() {
                   setShowModal("NONE");
                   setFormAction({});
                 }}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                 disabled={isDeleting}
               >
                 Cancel

@@ -119,7 +119,7 @@ export default function TestimonialsTab() {
         {[1, 2].map((i) => (
           <div
             key={i}
-            className="animate-pulse h-48 bg-slate-100 rounded-xl"
+            className="animate-pulse h-48 bg-gray-100 rounded-xl"
           ></div>
         ))}
       </div>
@@ -129,7 +129,7 @@ export default function TestimonialsTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div className="flex items-center gap-3 p-4 bg-primary-950 rounded-xl border border-blue-200">
           <div>
             <h3 className="font-semibold text-blue-900">
               Testimonial Management
@@ -138,7 +138,7 @@ export default function TestimonialsTab() {
         </div>
         <button
           onClick={() => setShowModal("INPUT")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add Testimonial
@@ -150,10 +150,10 @@ export default function TestimonialsTab() {
           {testimonials.map((testimonial: any) => (
             <div
               key={testimonial._id}
-              className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all"
             >
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {testimonial.photo ? (
                     <Image
                       src={testimonial?.photo?.url}
@@ -163,19 +163,19 @@ export default function TestimonialsTab() {
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <User className="w-8 h-8 text-slate-400" />
+                    <User className="w-8 h-8 text-gray-600" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-800 truncate">
+                  <h3 className="font-semibold text-gray-900 truncate">
                     {testimonial.person_name}
                   </h3>
-                  <p className="text-sm text-slate-600 truncate">
+                  <p className="text-sm text-gray-600 truncate">
                     {testimonial.person_title}
                   </p>
                 </div>
               </div>
-              <p className="text-slate-700 mb-4 line-clamp-3">
+              <p className="text-gray-600 mb-4 line-clamp-3">
                 {testimonial.testimonial}
               </p>
               <div className="flex gap-2">
@@ -185,7 +185,7 @@ export default function TestimonialsTab() {
                     form.setFieldsValue(testimonial);
                     setShowModal("INPUT");
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-primary-500 hover:bg-primary-950 rounded-lg transition-colors"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -195,7 +195,7 @@ export default function TestimonialsTab() {
                     setShowModal("DELETE");
                     setFormAction(testimonial);
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-red-600 hover:bg-red-950 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete
@@ -205,17 +205,17 @@ export default function TestimonialsTab() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
-          <MessageSquare className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">
+        <div className="text-center py-12 bg-gray-100 rounded-xl border border-gray-200">
+          <MessageSquare className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No testimonials yet
           </h3>
-          <p className="text-slate-600 mb-6">
+          <p className="text-gray-600 mb-6">
             Start by adding your first testimonial
           </p>
           <button
             onClick={() => setShowModal("INPUT")}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Testimonial
@@ -226,7 +226,7 @@ export default function TestimonialsTab() {
       {showModal === "INPUT" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               {formAction?._id ? "Edit Testimonial" : "Add New Testimonial"}
             </h2>
 
@@ -263,7 +263,7 @@ export default function TestimonialsTab() {
 
               {formAction?.photo?.data || formAction?.photo?.url ? (
                 <div className="mb-4">
-                  <span className="block text-sm font-medium text-slate-700 mb-2">
+                  <span className="block text-sm font-medium text-gray-600 mb-2">
                     Current Photo
                   </span>
                   <div className="relative mb-5 md:col-span-2 flex items-center justify-center">
@@ -287,7 +287,7 @@ export default function TestimonialsTab() {
                           photo: undefined,
                         }))
                       }
-                      className="absolute top-0 right-0 p-1 bg-white rounded-full shadow-md hover:bg-red-50 text-red-600 transition-colors"
+                      className="absolute top-0 right-0 p-1 bg-white rounded-full shadow-md hover:bg-red-950 text-red-600 transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -312,7 +312,7 @@ export default function TestimonialsTab() {
                     form.resetFields();
                     setShowModal("NONE");
                   }}
-                  className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                   disabled={isPending}
                 >
                   Cancel
@@ -323,13 +323,9 @@ export default function TestimonialsTab() {
                     formAction?._id ? updateTestimonial() : addTestimonial()
                   }
                   disabled={isPending}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50"
                 >
-                  {isPending
-                    ? "Saving..."
-                    : formAction?._id
-                      ? "Update"
-                      : "Create"}
+                  {isPending ? "Saving..." : formAction?._id ? "Update" : "Add"}
                 </button>
               </div>
             </Form>
@@ -340,10 +336,10 @@ export default function TestimonialsTab() {
       {showModal === "DELETE" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               Delete Testimonial
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-gray-600 mb-6">
               Are you sure you want to delete this testimonial? This action
               cannot be undone.
             </p>
@@ -353,7 +349,7 @@ export default function TestimonialsTab() {
                   setFormAction({});
                   setShowModal("NONE");
                 }}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                 disabled={isDeleting}
               >
                 Cancel

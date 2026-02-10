@@ -13,6 +13,7 @@ import {
   useSchedulesDetail,
   useUpdateSchedule,
 } from "../hook";
+import { useProducts } from "../../product/hook";
 
 import Image from "next/image";
 import Notification from "@/components/Notification";
@@ -30,12 +31,16 @@ export default function ScheduleEditorPage() {
   const searchParams = useSearchParams();
   const scheduleId = searchParams.get("id");
   const defaultDate = searchParams.get("date");
+  const defaultProductId = searchParams.get("product_id");
 
   const [form] = Form.useForm();
 
   const { data: existingSchedule } = useSchedulesDetail(scheduleId || "");
   const { mutate: createSchedule, isPending: isCreating } = useCreateSchedule();
   const { mutate: updateSchedule, isPending: isUpdating } = useUpdateSchedule();
+  const { data: productsData } = useProducts();
+
+  const products = productsData?.pages?.flatMap((page: any) => page.data) || [];
 
   const [formAction, setFormAction] = useState<any>({ benefits: [] });
 
@@ -51,14 +56,17 @@ export default function ScheduleEditorPage() {
         schedule_close_registration_date: dayjs(
           existingSchedule.schedule_close_registration_date,
         ),
+        product_id:
+          existingSchedule.product_id?._id || existingSchedule.product_id,
       };
 
       form.setFieldsValue(initalData);
       setFormAction(initalData);
-    } else if (defaultDate && !scheduleId) {
+    } else if ((defaultDate || defaultProductId) && !scheduleId) {
       const initialData = {
         benefits: [],
-        schedule_date: dayjs(defaultDate),
+        schedule_date: defaultDate ? dayjs(defaultDate) : undefined,
+        product_id: defaultProductId,
       };
       form.setFieldsValue(initialData);
       setFormAction(initialData);
@@ -66,7 +74,7 @@ export default function ScheduleEditorPage() {
       form.resetFields();
       setFormAction({ benefits: [] });
     }
-  }, [existingSchedule, defaultDate, scheduleId]);
+  }, [existingSchedule, defaultDate, defaultProductId, scheduleId]);
 
   const handleAddBenefit = () => {
     if (!newBenefit?.benefit) {
@@ -128,9 +136,7 @@ export default function ScheduleEditorPage() {
         formData.append("benefits", benefit);
       });
 
-      if (formAction?.banner?.file) {
-        formData.append("file", formAction?.banner?.file ?? null);
-      }
+      formData.append("product_id", formAction.product_id);
 
       createSchedule(formData, {
         onSuccess: () => {
@@ -192,12 +198,7 @@ export default function ScheduleEditorPage() {
         formData.append("benefits", benefit);
       });
 
-      if (formAction?.banner?.file) {
-        formData.append("file", formAction?.banner?.file ?? null);
-      } else {
-        const parsed = JSON.stringify(formAction?.banner);
-        formData.append("banner", parsed);
-      }
+      formData.append("product_id", formAction.product_id);
 
       updateSchedule(
         { id: scheduleId, data: formData },
@@ -222,20 +223,20 @@ export default function ScheduleEditorPage() {
   const isPending = isCreating || isUpdating;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gray-100">
       <div className="">
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => router.back()}
             className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-              {scheduleId ? "Edit Schedule" : "Create Schedule"}
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              {scheduleId ? "Edit Schedule" : "Add Schedule"}
             </h1>
-            <p className="text-slate-600 mt-1">
+            <p className="text-gray-600 mt-1">
               {scheduleId
                 ? "Update schedule information"
                 : "Add a new schedule or agenda"}
@@ -248,18 +249,31 @@ export default function ScheduleEditorPage() {
           requiredMark={false}
           className="space-y-8"
         >
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Basic Information
             </h2>
             <div className="space-y-4">
+              <InputForm
+                type="select"
+                name="product_id"
+                label="Product (Required)"
+                placeholder="Select a product for this schedule"
+                required
+                form={formAction}
+                setForm={(e: any) => setFormAction(e)}
+                options={products.map((product: any) => ({
+                  label: product.product_name,
+                  value: product._id,
+                }))}
+              />
               <Row gutter={[12, 12]}>
                 <Col span={12}>
                   <InputForm
                     type="text"
                     name="schedule_name"
                     label="Schedule Name"
-                    placeholder="Enter product name"
+                    placeholder="Enter schedule name"
                     required
                     form={formAction}
                     setForm={(e: any) => setFormAction(e)}
@@ -345,14 +359,14 @@ export default function ScheduleEditorPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 pt-6 pb-3">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-6 pt-6 pb-3">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-800">Benefits</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Benefits</h2>
               <span
                 className={`text-sm font-medium px-3 py-1 rounded-full ${
                   formAction?.benefits?.length >= 4
-                    ? "bg-red-100 text-red-700"
-                    : "bg-slate-100 text-slate-600"
+                    ? "bg-red-100 text-red-400"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
                 {formAction?.benefits?.length || 0} / 4
@@ -373,7 +387,7 @@ export default function ScheduleEditorPage() {
                 <button
                   type="button"
                   onClick={handleAddBenefit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-5 h-5" />
                   Add
@@ -386,9 +400,9 @@ export default function ScheduleEditorPage() {
                     (benefit: string, index: number) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
+                        className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200"
                       >
-                        <span className="text-slate-700">{benefit}</span>
+                        <span className="text-gray-600">{benefit}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveBenefit(index)}
@@ -404,8 +418,8 @@ export default function ScheduleEditorPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Schedule Details
             </h2>
 
@@ -496,49 +510,62 @@ export default function ScheduleEditorPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 pt-6 pb-3">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">
-              Banner
-            </h2>
-            {formAction?.banner?.data || formAction?.banner?.url ? (
-              <div className="relative mb-5">
-                <Image
-                  src={formAction?.banner?.data || formAction?.banner?.url}
-                  alt="uploaded banner"
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    borderRadius: "10px",
-                  }} // optional
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormAction((prev: any) => ({
-                      ...prev,
-                      banner: undefined,
-                    }))
-                  }
-                  className="p-1 hover:bg-gray-100 hover:text-red-500 rounded text-white transition-colors absolute top-5 right-5"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Product Information</h2>
+            
+            {formAction.product_id ? (
+              <div className="space-y-3">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">
+                    This schedule is linked to a product. The product's banner and information will be used.
+                  </p>
+                  {(() => {
+                    const selectedProduct = products.find((p: any) => p._id === formAction.product_id);
+                    if (selectedProduct) {
+                      return (
+                        <div className="mt-3 space-y-2">
+                          <div className="flex items-start gap-3">
+                            {selectedProduct.banner?.url && (
+                              <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={selectedProduct.banner.url}
+                                  alt={selectedProduct.product_name}
+                                  width={64}
+                                  height={64}
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-gray-900">
+                                {selectedProduct.product_name}
+                              </p>
+                              <p className="text-xs text-gray-600 mt-1">
+                                {selectedProduct.product_category}
+                              </p>
+                              {selectedProduct.skill_level && (
+                                <span className="inline-block mt-2 px-2 py-1 text-xs bg-white rounded-md border border-gray-200">
+                                  {selectedProduct.skill_level}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
               </div>
             ) : (
-              <InputForm
-                type="file"
-                name="banner"
-                label=""
-                accept="image/*"
-                className="mb-5"
-                form={formAction}
-                setForm={(e: any) => setFormAction(e)}
-              />
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <strong>No product selected.</strong> Please select a product to link this schedule.
+                </p>
+              </div>
             )}
           </div>
+          
           <div className="flex gap-3">
             <button
               type="button"
@@ -547,7 +574,7 @@ export default function ScheduleEditorPage() {
                 form.resetFields();
                 setFormAction({ benefits: [] });
               }}
-              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors font-medium"
               disabled={isPending}
             >
               Cancel
@@ -558,7 +585,7 @@ export default function ScheduleEditorPage() {
                 scheduleId ? handleUpdateSchedule() : handleAddSchedule()
               }
               disabled={isPending}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? (
                 <>

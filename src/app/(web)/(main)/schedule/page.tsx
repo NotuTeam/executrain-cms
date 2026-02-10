@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -17,15 +17,17 @@ import {
   Clock,
   X,
   Trash2,
+  Filter,
 } from "lucide-react";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
+import { Select } from "antd";
 
 import Notification from "@/components/Notification";
-import UploadBannerModal from "./components/UploadBannerModal";
 import { formatDuration } from "@/lib/utils";
 
 import { useSchedules, useDelete, useCreateBulkSchedule } from "./hook";
+import { useProducts } from "../product/hook";
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -35,15 +37,20 @@ export default function SchedulePage() {
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [uploadedSchedules, setUploadedSchedules] = useState<any[]>([]);
-  const [showBannerModal, setShowBannerModal] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
+  const [showProductFilter, setShowProductFilter] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importModalProductId, setImportModalProductId] = useState<string | undefined>(undefined);
+  const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: schedules = [], refetch } = useSchedules();
-  const { mutate: createSchedule, isPending: isCreating } =
-    useCreateBulkSchedule();
-
+  const { data: schedules = [], refetch } = useSchedules(selectedProductId);
+  const { data: productsData } = useProducts();
+  const { mutate: createSchedule, isPending: isCreating } = useCreateBulkSchedule();
   const { mutate: deleteSchedule, isPending } = useDelete();
+
+  const products = productsData?.pages?.flatMap((page: any) => page.data) || [];
 
   const generateCalendarDays = () => {
     const startOfMonth = currentDate.startOf("month");
@@ -71,18 +78,88 @@ export default function SchedulePage() {
     });
   };
 
-  const handleMouseEnter = (date: dayjs.Dayjs, e: React.MouseEvent) => {
+  const handleMouseEnter = useCallback((date: dayjs.Dayjs, e: React.MouseEvent) => {
+    // Clear existing timeout if any
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
     const events = getEventsForDate(date);
     if (events.length > 0) {
+      console.log('Showing popup for:', date.format('YYYY-MM-DD'), 'with', events.length, 'events');
       setHoveredDate(date.format("YYYY-MM-DD"));
       const rect = e.currentTarget.getBoundingClientRect();
-      setPopupPosition({ x: rect.left, y: rect.bottom });
+      const calendarContainer = e.currentTarget.closest('.bg-white') as HTMLElement;
+      
+      if (calendarContainer) {
+        const containerRect = calendarContainer.getBoundingClientRect();
+        setPopupPosition({ 
+          x: rect.left - containerRect.left,
+          y: rect.bottom - containerRect.top
+        });
+      }
     }
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleDateClick = useCallback((date: dayjs.Dayjs, e: React.MouseEvent) => {
+    // Clear existing timeout if any
+    if (popupTimeoutRef.current) {
+      clearTimeout(popupTimeoutRef.current);
+      popupTimeoutRef.current = null;
+    }
+
+    const events = getEventsForDate(date);
+    if (events.length > 0) {
+      console.log('Showing popup for:', date.format('YYYY-MM-DD'), 'with', events.length, 'events');
+      setHoveredDate(date.format("YYYY-MM-DD"));
+      const rect = e.currentTarget.getBoundingClientRect();
+      const calendarContainer = e.currentTarget.closest('.bg-white') as HTMLElement;
+      
+      if (calendarContainer) {
+        const containerRect = calendarContainer.getBoundingClientRect();
+        setPopupPosition({ 
+          x: rect.left - containerRect.left,
+          y: rect.bottom - containerRect.top
+        });
+      }
+    }
+  }, []); // Empty deps because getEventsForDate uses schedules from closure
+
+  const handlePopupMouseLeave = useCallback(() => {
+    // Close popup when mouse leaves popup area
     setHoveredDate(null);
-  };
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (popupTimeoutRef.current) {
+        clearTimeout(popupTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const calendarContainer = target.closest('.bg-white.border');
+      const popup = target.closest('.absolute.bg-white.z-50');
+      
+      // Close if click is outside both calendar and popup
+      if (!calendarContainer && !popup && hoveredDate) {
+        setHoveredDate(null);
+      }
+    };
+
+    if (hoveredDate) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [hoveredDate]);
 
   const handleExportTemplate = () => {
     const wb = XLSX.utils.book_new();
@@ -137,7 +214,7 @@ export default function SchedulePage() {
       { wch: 30 }, // location
       { wch: 10 }, // quota
       { wch: 10 }, // duration
-      { wch: 50 }, // link (new)
+      { wch: 50 }, // link
       { wch: 15 }, // is_assestment
       { wch: 40 }, // benefits
       { wch: 15 }, // skill_level
@@ -152,8 +229,27 @@ export default function SchedulePage() {
     Notification("success", "Template downloaded successfully");
   };
 
+  const handleOpenImportModal = () => {
+    setShowImportModal(true);
+  };
+
+  const handleCloseImportModal = () => {
+    setShowImportModal(false);
+    setImportModalProductId(undefined);
+    setUploadedSchedules([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
+    if (!importModalProductId) {
+      Notification("error", "Please select a product first");
+      return;
+    }
+
     if (file) {
       try {
         const reader = new FileReader();
@@ -199,403 +295,526 @@ export default function SchedulePage() {
                     if (
                       (field === "schedule_date" ||
                         field === "schedule_close_registration_date") &&
-                      typeof value === "number"
+                      typeof value === "string"
                     ) {
-                      const EXCEL_DAYS_DIFF = 25569;
-                      const totalDays = value - EXCEL_DAYS_DIFF;
-                      const milliseconds = totalDays * 24 * 60 * 60 * 1000;
-
-                      const dateTimestamp = dayjs(milliseconds)
-                        .valueOf()
-                        .toString();
-                      scheduleData[field] = dateTimestamp;
+                      const parsedDate = dayjs(value, [
+                        "YYYY/M/D",
+                        "YYYY-MM-DD",
+                        "M/D/YYYY",
+                      ]);
+                      scheduleData[field] = parsedDate.isValid()
+                        ? parsedDate.toDate()
+                        : value;
+                    } else if (field === "benefits" && typeof value === "string") {
+                      scheduleData[field] = value.split("|").map((b) => b.trim());
+                    } else if (field === "is_assestment") {
+                      scheduleData[field] =
+                        value.toLowerCase() === "y" ||
+                        value.toLowerCase() === "yes";
                     } else if (field === "quota" || field === "duration") {
                       scheduleData[field] = parseInt(value) || 0;
-                    } else if (field === "is_assestment") {
-                      scheduleData[field] = String(value).toLowerCase() === "y";
-                    } else if (field === "benefits") {
-                      scheduleData[field] = String(value)
-                        .split("|")
-                        .map((b: string) => b.trim());
                     } else {
-                      scheduleData[field] = String(value).trim();
+                      scheduleData[field] = value;
                     }
                   }
                 });
 
                 return scheduleData;
-              })
-              .filter((schedule: any) => schedule.schedule_name);
-
-            if (newSchedules.length > 0) {
-              createSchedule(newSchedules, {
-                onSuccess: (response: any) => {
-                  Notification(
-                    "success",
-                    `Success Import ${newSchedules.length} Data`
-                  );
-
-                  // Show modal with uploaded schedules
-                  if (response?.data && response.data.length > 0) {
-                    setUploadedSchedules(response.data);
-                    setShowBannerModal(true);
-                  }
-
-                  refetch();
-                },
-                onError: () => {
-                  Notification("error", "Failed to Import Data");
-                },
               });
-            } else {
-              Notification(
-                "error",
-                "No valid schedules found in the file. Please check the format."
-              );
-            }
-          } catch (error) {
-            console.error("Import error:", error);
+
+            setUploadedSchedules(newSchedules);
             Notification(
-              "error",
-              "Failed to import file. Please check the file format."
+              "success",
+              `Successfully imported ${newSchedules.length} schedules for product: ${products.find((p: any) => p._id === importModalProductId)?.product_name}. Please review before importing.`
             );
+          } catch (error) {
+            console.error(error);
+            Notification("error", "Failed to parse Excel file");
           }
         };
-
         reader.readAsBinaryString(file);
       } catch (error) {
-        console.error("File reading error:", error);
-        Notification("error", "Failed to read the file.");
+        console.error(error);
+        Notification("error", "Failed to read file");
       }
     }
+  };
 
+  const handleConfirmImport = () => {
+    if (!importModalProductId) {
+      Notification("error", "Please select a product first");
+      return;
+    }
+
+    createSchedule(
+      { payload: uploadedSchedules, product_id: importModalProductId },
+      {
+        onSuccess: () => {
+          Notification("success", "Schedules imported successfully");
+          handleCloseImportModal();
+          refetch();
+        },
+        onError: (error: any) => {
+          Notification("error", error.message || "Failed to import schedules");
+        },
+      }
+    );
+  };
+
+  const handleCancelImport = () => {
+    setUploadedSchedules([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  const handleFileInputClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.accept = ".xlsx,.xls";
-      fileInputRef.current.click();
+  const handleDeleteSchedule = (id: string) => {
+    // Konfirmasi sebelum delete
+    if (window.confirm("Are you sure you want to delete this schedule? This action cannot be undone.")) {
+      deleteSchedule(id, {
+        onSuccess: () => {
+          Notification("success", "Schedule deleted successfully");
+          refetch();
+        },
+        onError: (error: any) => {
+          Notification("error", error.message || "Failed to delete schedule");
+        },
+      });
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "OPEN_SEAT":
-        return "bg-green-100 text-green-700";
-      case "FULL_BOOKED":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
+  const calendarDays = generateCalendarDays();
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Schedule</h1>
-          <p className="text-slate-600 mt-1">
-            Manage your schedules and appointments
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">Schedule</h1>
+          <p className="text-gray-600 mt-1">Manage training schedules and events</p>
         </div>
+
         <div className="flex items-center gap-3">
+          {/* Product Filter */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProductFilter(!showProductFilter)}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {selectedProductId
+                  ? products.find((p: any) => p._id === selectedProductId)
+                      ?.product_name || "Selected Product"
+                  : "All Products"}
+              </span>
+            </button>
+
+            {showProductFilter && (
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
+                <div className="p-3 border-b border-gray-200">
+                  <button
+                    onClick={() => {
+                      setSelectedProductId(undefined);
+                      setShowProductFilter(false);
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-900 w-full text-left"
+                  >
+                    All Products
+                  </button>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {products.map((product: any) => (
+                    <button
+                      key={product._id}
+                      onClick={() => {
+                        setSelectedProductId(product._id);
+                        setShowProductFilter(false);
+                      }}
+                      className="w-full px-4 py-2 text-sm text-left hover:bg-gray-50 transition-colors"
+                    >
+                      {product.product_name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={handleExportTemplate}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            <Download className="w-5 h-5" />
-            <span className="hidden sm:inline">Template</span>
+            <Download className="w-4 h-4" />
+            <span className="text-sm font-medium">Template</span>
           </button>
+
           <button
-            onClick={handleFileInputClick}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+            onClick={handleOpenImportModal}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
-            <Upload className="w-5 h-5" />
-            <span className="hidden sm:inline">Import</span>
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={handleImportExcel}
-            className="hidden"
-          />
-          <button
-            onClick={() => router.push("/schedule/editor")}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Add Schedule</span>
+            <Upload className="w-4 h-4" />
+            <span className="text-sm font-medium">Import Excel</span>
           </button>
         </div>
       </div>
 
-      {/* Calendar */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        {/* Calendar Header */}
-        <div className="p-6 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-800">
-              {currentDate.format("MMMM YYYY")}
-            </h2>
-            <div className="flex items-center gap-2">
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Import Schedules</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Select a product and upload schedule data from Excel file
+                </p>
+              </div>
               <button
-                onClick={() => setCurrentDate(currentDate.subtract(1, "month"))}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                onClick={handleCloseImportModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-slate-600" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Product Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Product <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={importModalProductId || ""}
+                  onChange={(e) => setImportModalProductId(e.target.value || undefined)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                  required
+                >
+                  <option value="">Choose a product...</option>
+                  {products.map((product: any) => (
+                    <option key={product._id} value={product._id}>
+                      {product.product_name}
+                    </option>
+                  ))}
+                </select>
+                {importModalProductId && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Selected: <strong>{products.find((p: any) => p._id === importModalProductId)?.product_name}</strong>
+                  </p>
+                )}
+              </div>
+
+              {/* File Upload */}
+              {importModalProductId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Excel File <span className="text-red-500">*</span>
+                  </label>
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600">Click to upload Excel file</p>
+                    <p className="text-xs text-gray-500 mt-1">.xlsx or .xls files</p>
+                    <input
+                      type="file"
+                      accept=".xlsx, .xls"
+                      onChange={handleImportExcel}
+                      className="hidden"
+                      ref={fileInputRef}
+                    />
+                  </label>
+                </div>
+              )}
+
+              {/* Uploaded Schedules Preview */}
+              {uploadedSchedules.length > 0 && (
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <h3 className="font-semibold text-gray-900">
+                      {uploadedSchedules.length} Schedules Ready to Import
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Product: {products.find((p: any) => p._id === importModalProductId)?.product_name}
+                    </p>
+                  </div>
+
+                  <div className="max-h-64 overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">
+                            Name
+                          </th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">
+                            Date
+                          </th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">
+                            Location
+                          </th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">
+                            Quota
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {uploadedSchedules.map((schedule, index) => (
+                          <tr key={index}>
+                            <td className="px-4 py-2 text-sm text-gray-900">
+                              {schedule.schedule_name}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-600">
+                              {dayjs(schedule.schedule_date).format("YYYY-MM-DD")}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-600">
+                              {schedule.location}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-600">
+                              {schedule.quota}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
               <button
-                onClick={() => setCurrentDate(dayjs())}
-                className="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                onClick={handleCloseImportModal}
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                disabled={isCreating}
               >
-                Today
+                Cancel
               </button>
+              {uploadedSchedules.length > 0 && (
+                <button
+                  onClick={handleCancelImport}
+                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                  disabled={isCreating}
+                >
+                  Clear File
+                </button>
+              )}
               <button
-                onClick={() => setCurrentDate(currentDate.add(1, "month"))}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                onClick={handleConfirmImport}
+                disabled={isCreating || !importModalProductId || uploadedSchedules.length === 0}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="w-5 h-5 text-slate-600" />
+                {isCreating ? "Importing..." : "Import Schedules"}
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Old Uploaded Schedules Preview - Remove this section as it's now in modal */}
+      {uploadedSchedules.length > 0 && false && (
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Review {uploadedSchedules.length} Schedules to Import
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancelImport}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmImport}
+                disabled={isCreating}
+                className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50"
+              >
+                {isCreating ? "Importing..." : "Confirm Import"}
+              </button>
+            </div>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                    Date
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                    Location
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                    Quota
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {uploadedSchedules.map((schedule, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-2 text-sm text-gray-900">
+                      {schedule.schedule_name}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-600">
+                      {dayjs(schedule.schedule_date).format("YYYY-MM-DD")}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-600">
+                      {schedule.location}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-600">
+                      {schedule.quota}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Calendar */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 relative">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => setCurrentDate(currentDate.subtract(1, "month"))}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+
+          <h2 className="text-xl font-semibold text-gray-900">
+            {currentDate.format("MMMM YYYY")}
+          </h2>
+
+          <button
+            onClick={() => setCurrentDate(currentDate.add(1, "month"))}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 text-gray-600" />
+          </button>
         </div>
 
         {/* Calendar Grid */}
-        <div className="p-6">
-          {/* Days of week header */}
-          <div className="grid grid-cols-7 gap-4 mb-4">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        <div className="grid grid-cols-7 gap-2">
+          {/* Weekday Headers */}
+          {weekdays.map((day) => (
+            <div
+              key={day}
+              className="text-center text-sm font-medium text-gray-700 py-2"
+            >
+              {day}
+            </div>
+          ))}
+
+          {/* Calendar Days */}
+          {calendarDays.map((date, index) => {
+            const events = getEventsForDate(date);
+            const isCurrentMonth = date.isSame(currentDate, "month");
+            const isToday = date.isSame(dayjs(), "day");
+
+            return (
               <div
-                key={day}
-                className="text-center text-sm font-medium text-slate-600 py-2"
+                key={index}
+                onClick={(e) => handleDateClick(date, e)}
+                className={`
+                  relative p-2 min-h-[100px] border border-gray-200 rounded-lg
+                  ${isCurrentMonth ? "bg-white" : "bg-gray-50"}
+                  ${isToday ? "ring-2 ring-primary-500" : ""}
+                  ${events.length > 0 ? "hover:bg-gray-50" : ""}
+                  ${events.length > 0 ? "cursor-pointer" : "cursor-default"}
+                  transition-colors
+                `}
               >
-                {day}
-              </div>
-            ))}
-          </div>
+                <div className="text-sm text-gray-700 mb-1">
+                  {date.format("D")}
+                </div>
 
-          {/* Calendar days */}
-          <div className="grid grid-cols-7 gap-4">
-            {generateCalendarDays().map((day) => {
-              const events = getEventsForDate(day);
-              const isCurrentMonth = day.isSame(currentDate, "month");
-              const isToday = day.isSame(dayjs(), "day");
-              const hasEvents = events.length > 0;
-
-              return (
-                <div
-                  key={day.format("YYYY-MM-DD")}
-                  className={`min-h-[120px] p-2 border rounded-lg transition-all cursor-pointer ${
-                    isCurrentMonth
-                      ? "border-slate-200"
-                      : "border-slate-100 opacity-50"
-                  } ${isToday ? "bg-blue-50 border-blue-200" : ""} ${
-                    hasEvents
-                      ? "hover:shadow-md hover:border-blue-300"
-                      : "hover:bg-slate-50"
-                  }`}
-                  onMouseEnter={(e) => handleMouseEnter(day, e)}
-                  // onMouseLeave={() => setTimeout(handleMouseLeave, 1500)}
-                  onClick={() => {
-                    if (!hasEvents) {
-                      router.push(
-                        `/schedule/editor?date=${day.format("YYYY-MM-DD")}`
-                      );
-                    }
-                  }}
-                >
-                  <div
-                    className={`text-sm font-medium mb-2 ${
-                      isToday
-                        ? "text-blue-600"
-                        : isCurrentMonth
-                        ? "text-slate-800"
-                        : "text-slate-400"
-                    }`}
-                  >
-                    {day.format("D")}
-                  </div>
-
+                {events.length > 0 && (
                   <div className="space-y-1">
-                    {events.slice(0, 3).map((event: any) => (
+                    {events.slice(0, 2).map((event: any, idx: number) => (
                       <div
-                        key={event._id}
-                        className="text-xs p-1.5 rounded bg-blue-100 text-blue-700 truncate cursor-pointer hover:bg-blue-200 transition-colors"
-                        title={event.schedule_name}
+                        key={idx}
+                        className="text-xs bg-primary-50 text-primary-700 px-2 py-1 rounded truncate"
                       >
-                        <div className="flex items-center gap-1">
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                          <span className="truncate font-medium">
-                            {event.schedule_name}
-                          </span>
-                        </div>
+                        {event.schedule_name}
                       </div>
                     ))}
-                    {events.length > 3 && (
-                      <div className="text-xs text-slate-500 text-center font-medium">
-                        +{events.length - 3} more
+                    {events.length > 2 && (
+                      <div className="text-xs text-gray-500 px-2 py-1">
+                        +{events.length - 2} more
                       </div>
                     )}
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
 
-      {hoveredDate && (
-        <div
-          className="absolute z-50 bg-white rounded-xl shadow-2xl border border-slate-200 p-4 w-96 max-h-[500px] overflow-y-auto"
-          style={{
-            left: `${popupPosition.x / 1.25}px`,
-            top: `${popupPosition.y}px`,
-          }}
-          onMouseEnter={() => setHoveredDate(hoveredDate)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-slate-800">
+        {/* Popup for clicked date - INSIDE calendar div */}
+        {hoveredDate && (
+          <div
+            className="absolute bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50"
+            style={{
+              left: `${popupPosition.x}px`,
+              top: `${popupPosition.y}px`,
+            }}
+            onMouseLeave={handlePopupMouseLeave}
+          >
+            <h3 className="font-semibold text-gray-900 mb-2">
               {dayjs(hoveredDate).format("MMMM D, YYYY")}
             </h3>
-            <button
-              onClick={handleMouseLeave}
-              className="p-1 hover:bg-slate-100 rounded transition-colors"
-            >
-              <X className="w-4 h-4 text-slate-600" />
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {getEventsForDate(dayjs(hoveredDate)).map((schedule: any) => (
+          <div className="space-y-2">
+            {getEventsForDate(dayjs(hoveredDate)).map((event: any, idx: number) => (
               <div
-                key={schedule.id}
-                className="p-3 border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all"
+                key={idx}
+                className="p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-slate-800 flex-1">
-                    {schedule.schedule_name}
-                  </h4>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(
-                      schedule.status
-                    )}`}
-                  >
-                    {schedule.status.replace("_", " ")}
-                  </span>
-                </div>
-
-                <p className="text-sm text-slate-600 mb-3 line-clamp-2">
-                  {schedule.schedule_description}
-                </p>
-
-                <div className="space-y-1.5 mb-3">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>
-                      {schedule.schedule_start} - {schedule.schedule_end}
-                    </span>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900">
+                      {event.schedule_name}
+                    </h4>
+                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {event.schedule_start} - {event.schedule_end}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {event.location}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{schedule.location}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => router.push(`/schedule/editor/${event._id}`)}
+                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      title="Edit Schedule"
+                    >
+                      <Edit className="w-3 h-3 text-gray-600" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteSchedule(event._id)}
+                      className="p-1 hover:bg-red-100 rounded transition-colors"
+                      title="Delete Schedule"
+                    >
+                      <Trash2 className="w-3 h-3 text-red-600" />
+                    </button>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>
-                      {schedule.quota} seats |{" "}
-                      {formatDuration(schedule.duration, { short: true })}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 mt-5">
-                  <button
-                    onClick={() => setSelected(schedule._id)}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 border text-blue-600 border-blue-600 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </button>
-                  <button
-                    onClick={() =>
-                      router.push(`/schedule/editor?id=${schedule._id}`)
-                    }
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Edit
-                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {selected ? (
-        <div className="fixed bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 top-0 right-0 left-0 bottom-0 m-0">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
-              Delete Schedule
-            </h2>
-            <p>Are you sure want to delete this schedule?</p>
-            <div className="flex gap-5 mt-8 justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelected(null);
-                }}
-                className="flex items-center justify-center gap-2 px-10 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                disabled={isPending}
-              >
-                No
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  deleteSchedule(selected, {
-                    onSuccess: () => {
-                      Notification("success", "Success Delete Data");
-                      refetch();
-                      setSelected(null);
-                    },
-                    onError: () => {
-                      Notification("error", "Failed to Delete Data");
-                      setSelected(null);
-                    },
-                  });
-                }}
-                className="px-10 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isPending}
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {/* Upload Banner Modal */}
-      {showBannerModal && uploadedSchedules.length > 0 && (
-        <UploadBannerModal
-          schedules={uploadedSchedules}
-          onClose={() => {
-            setShowBannerModal(false);
-            setUploadedSchedules([]);
-          }}
-          onComplete={() => {
-            setShowBannerModal(false);
-            setUploadedSchedules([]);
-            refetch();
-          }}
-        />
-      )}
-    </div>
+        )}
+      </div>
+      </div>
   );
 }

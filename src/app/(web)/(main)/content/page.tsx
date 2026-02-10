@@ -24,17 +24,17 @@ export default function ContentPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-3xl font-bold text-gray-900">
             Content Management
           </h1>
-          <p className="text-slate-600 mt-1">
+          <p className="text-gray-600 mt-1">
             Manage website content, statistics, and metadata
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="border-b border-slate-200">
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="border-b border-gray-200">
           <div className="flex overflow-x-auto">
             {tabs.map((tab) => {
               return (
@@ -43,8 +43,8 @@ export default function ContentPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center border-b-2 border-transparent gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap duration-150 ${
                     activeTab === tab.id
-                      ? "text-blue-600  !border-blue-600 font-semibold"
-                      : "text-slate-600 hover:text-slate-800"
+                      ? "text-primary-500  !border-primary-500 font-semibold"
+                      : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   {tab.name}

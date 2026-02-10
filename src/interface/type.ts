@@ -32,5 +32,6 @@ export interface MenuItem {
   id: number;
   text: string;
   icon: any;
-  href: string;
+  href?: string;
+  children?: MenuItem[];
 }

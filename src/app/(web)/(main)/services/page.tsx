@@ -63,7 +63,7 @@ export default function ServicePage() {
     return services.filter((service: any) =>
       service.service_name
         ?.toLowerCase()
-        .includes(debouncedSearchTerm.toLowerCase())
+        .includes(debouncedSearchTerm.toLowerCase()),
     );
   }, [services, debouncedSearchTerm]);
 
@@ -165,7 +165,7 @@ export default function ServicePage() {
           onError: (error: any) => {
             Notification("error", error.message || "Failed to update service");
           },
-        }
+        },
       );
     }
   };
@@ -190,10 +190,10 @@ export default function ServicePage() {
     return (
       <div
         key={service._id}
-        className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
+        className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
       >
         {service.logo?.url ? (
-          <div className="h-48 bg-slate-100 overflow-hidden flex items-center justify-center">
+          <div className="h-48 bg-gray-100 overflow-hidden flex items-center justify-center">
             <Image
               src={service.logo?.url}
               alt={service.service_name}
@@ -203,28 +203,28 @@ export default function ServicePage() {
             />
           </div>
         ) : (
-          <div className="h-48 bg-slate-100 flex items-center justify-center">
-            <ImageIcon className="w-16 h-16 text-slate-300" />
+          <div className="h-48 bg-gray-100 flex items-center justify-center">
+            <ImageIcon className="w-16 h-16 text-gray-700" />
           </div>
         )}
 
         <div className="p-6">
           <div className="mb-3">
             <Tooltip placement="top" title={service?.service_name || "-"}>
-              <h3 className="text-lg font-semibold text-slate-800 truncate">
+              <h3 className="text-lg font-semibold text-gray-900 truncate">
                 {service.service_name}
               </h3>
             </Tooltip>
           </div>
 
-          <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+          <p className="text-sm text-gray-600 mb-4 line-clamp-3">
             {service.service_description}
           </p>
 
-          <div className="flex gap-2 pt-4 border-t border-slate-200">
+          <div className="flex gap-2 pt-4 border-t border-gray-200">
             <button
               onClick={() => handleOpenEditModal(service)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary-950 text-primary-400 rounded-lg hover:bg-primary-900 transition-colors"
             >
               <Edit className="w-4 h-4" />
               Edit
@@ -234,7 +234,7 @@ export default function ServicePage() {
                 setSelectedService(service);
                 setShowDeleteModal(true);
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -249,12 +249,12 @@ export default function ServicePage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Services</h1>
-          <p className="text-slate-600 mt-1">Manage your company services</p>
+          <h1 className="text-3xl font-bold text-gray-900">Services</h1>
+          <p className="text-gray-600 mt-1">Manage your company services</p>
         </div>
         <button
           onClick={handleOpenAddModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add Service
@@ -262,15 +262,15 @@ export default function ServicePage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200">
+      <div className="bg-white rounded-2xl p-6 border border-gray-200">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
           <input
             type="text"
             placeholder="Search service..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-gray-100 text-gray-900 placeholder:text-gray-600"
           />
         </div>
       </div>
@@ -278,8 +278,8 @@ export default function ServicePage() {
       {/* Loading State */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-slate-600">Loading services...</p>
+          <div className="inline-block w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600">Loading services...</p>
         </div>
       ) : filteredServices && filteredServices.length > 0 ? (
         <>
@@ -291,26 +291,26 @@ export default function ServicePage() {
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-gray-600">
               Showing {filteredServices.length} service
               {filteredServices.length !== 1 ? "s" : ""}
             </p>
           </div>
         </>
       ) : (
-        <div className="text-center py-12 bg-white rounded-xl border border-slate-200 flex flex-col items-center">
-          <Briefcase className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">
+        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 flex flex-col items-center">
+          <Briefcase className="w-16 h-16 text-gray-700 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No services found
           </h3>
-          <p className="text-slate-600 mb-6">
+          <p className="text-gray-600 mb-6">
             {searchTerm
               ? "Try adjusting your search"
               : "Get started by creating your first service"}
           </p>
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Service
@@ -322,13 +322,13 @@ export default function ServicePage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-800">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">
                 {modalMode === "add" ? "Add New Service" : "Edit Service"}
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-gray-600 hover:text-gray-800"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -337,7 +337,7 @@ export default function ServicePage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* Service Name */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Service Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -347,14 +347,14 @@ export default function ServicePage() {
                     setFormData({ ...formData, service_name: e.target.value })
                   }
                   placeholder="e.g., Web Development"
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-100 text-gray-900 placeholder:text-gray-600"
                   required
                 />
               </div>
 
               {/* Service Description */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Service Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -367,19 +367,19 @@ export default function ServicePage() {
                   }
                   placeholder="Describe your service..."
                   rows={4}
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-100 text-gray-900 placeholder:text-gray-600 resize-none"
                   required
                 />
               </div>
 
               {/* Logo Upload */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Logo
                 </label>
 
                 {formData.logo_preview ? (
-                  <div className="relative w-full h-48 border-2 border-slate-200 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-48 border-2 border-gray-300 rounded-lg overflow-hidden">
                     <Image
                       src={formData.logo_preview}
                       alt="Preview"
@@ -396,12 +396,12 @@ export default function ServicePage() {
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
-                    <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                    <span className="text-sm text-slate-600">
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                    <Upload className="w-8 h-8 text-gray-600 mb-2" />
+                    <span className="text-sm text-gray-600">
                       Click to upload logo
                     </span>
-                    <span className="text-xs text-slate-400 mt-1">
+                    <span className="text-xs text-gray-600 mt-1">
                       PNG, JPG up to 5MB
                     </span>
                     <input
@@ -419,21 +419,21 @@ export default function ServicePage() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
                   disabled={isCreating || isUpdating}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isCreating || isUpdating}
                 >
                   {isCreating || isUpdating
                     ? "Saving..."
                     : modalMode === "add"
-                    ? "Add Service"
-                    : "Update Service"}
+                      ? "Add Service"
+                      : "Update Service"}
                 </button>
               </div>
             </form>
@@ -445,13 +445,13 @@ export default function ServicePage() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Trash2 className="w-6 h-6 text-red-600" />
+            <div className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="w-6 h-6 text-primary-600 hover:bg-primary-700" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
               Delete Service
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-gray-600 mb-6">
               Are you sure you want to delete "
               <span className="font-semibold">
                 {selectedService?.service_name}
@@ -465,7 +465,7 @@ export default function ServicePage() {
                   setShowDeleteModal(false);
                   setSelectedService(null);
                 }}
-                className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
                 disabled={isDeleting}
               >
                 Cancel
@@ -473,7 +473,7 @@ export default function ServicePage() {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isDeleting}
               >
                 {isDeleting ? "Deleting..." : "Delete"}

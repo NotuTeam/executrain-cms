@@ -61,7 +61,7 @@ export default function SocialMediaTab() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="animate-pulse h-40 bg-slate-100 rounded-xl"
+            className="animate-pulse h-40 bg-gray-100 rounded-xl"
           ></div>
         ))}
       </div>
@@ -70,12 +70,12 @@ export default function SocialMediaTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+      <div className="flex items-center gap-3 p-4 bg-primary-950 rounded-xl border border-blue-200">
         <div>
           <h3 className="font-semibold text-blue-900">
             Social Media Management
           </h3>
-          <p className="text-sm text-blue-700">
+          <p className="text-sm text-primary-400">
             Update your social media links. Leave link empty to hide from
             website.
           </p>
@@ -86,11 +86,11 @@ export default function SocialMediaTab() {
         {socmeds.map((socmed: any) => (
           <div
             key={socmed._id}
-            className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all"
+            className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all"
           >
             <div className="flex items-start gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-slate-800 mb-1 truncate">
+                <h3 className="font-semibold text-gray-900 mb-1 truncate">
                   {socmed?.socmed_name}
                 </h3>
                 {socmed?.socmed_link ? (
@@ -98,13 +98,13 @@ export default function SocialMediaTab() {
                     href={socmed.socmed_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1 truncate"
+                    className="text-sm text-primary-500 hover:text-primary-400 flex items-center gap-1 truncate"
                   >
                     <span className="truncate">{socmed.socmed_link}</span>
                     <ExternalLink className="w-3 h-3 flex-shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-sm text-slate-400 italic">
+                  <span className="text-sm text-gray-600 italic">
                     No link set (hidden on website)
                   </span>
                 )}
@@ -117,7 +117,7 @@ export default function SocialMediaTab() {
                   setFormAction(socmed);
                   form.setFieldsValue(socmed);
                 }}
-                className="w-full flex items-center justify-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center gap-2 p-2 text-primary-500 hover:bg-primary-950 rounded-lg transition-colors"
               >
                 <Edit className="w-4 h-4" />
                 <span>Edit Link</span>
@@ -130,16 +130,16 @@ export default function SocialMediaTab() {
       {showModal === "INPUT" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               Edit {formAction?.socmed_name} Link
             </h2>
 
             <Form form={form} layout="vertical" requiredMark={false}>
               <div className="mb-4">
-                <span className="block text-sm font-medium text-slate-700 mb-2">
+                <span className="block text-sm font-medium text-gray-600 mb-2">
                   Social Media Name
                 </span>
-                <div className="px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 text-slate-600">
+                <div className="px-4 py-2 bg-gray-100 rounded-lg border border-gray-200 text-gray-600">
                   {formAction?.socmed_name}
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function SocialMediaTab() {
                     setShowModal("NONE");
                     form.resetFields();
                   }}
-                  className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
                   disabled={isPending}
                 >
                   Cancel
@@ -170,7 +170,7 @@ export default function SocialMediaTab() {
                   type="button"
                   onClick={() => updateSocmed()}
                   disabled={isPending}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50"
                 >
                   {isPending ? "Saving..." : "Update Link"}
                 </button>

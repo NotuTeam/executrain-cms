@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useGlobalState } from "@/lib/middleware";
+import Image from "next/image";
 
 import { useLogin } from "@/hooks/useAuth";
 
@@ -39,18 +39,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
-            Excelearn Internal
-          </h1>
-          <p className="text-slate-600">Sign in to your dashboard</p>
-        </div>
-
+    <div className="min-h-screen flex items-center justify-center min-w-full">
+      <div
+        style={{
+          backgroundImage: `url('https://res.cloudinary.com/dyn73qnjx/image/upload/v1770611979/Untitled_1_nqfsht.png'), url('./banner.webp')`,
+          backgroundSize: "cover",
+          backgroundPosition: "50%",
+          backgroundRepeat: "no-repeat",
+        }}
+        className="w-1/2 h-[100dvh]"
+      ></div>
+      <div className="w-1/2 p-10 flex items-center justify-center flex-col">
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+        <div className="p-8 w-[80%]">
           <Form
             form={formAction}
             onFinish={handleLogin}
@@ -58,12 +59,20 @@ export default function LoginPage() {
             className="space-y-6"
             requiredMark={false}
           >
+            <div className="flex items-center justify-center mt-5 mb-10">
+              <Image
+                src="/logo-colored.png"
+                alt="logo"
+                width={350}
+                height={200}
+              />
+            </div>
             <InputForm
               type="text"
               name="username"
               placeholder="Enter your username"
               label="Username"
-              icon={<User className="w-5 h-5 text-slate-400" />}
+              icon={<User className="w-5 h-5 text-gray-600" />}
               required
               className="mb-0"
             />
@@ -73,7 +82,7 @@ export default function LoginPage() {
               name="password"
               placeholder="Enter your password"
               label="Password"
-              icon={<Lock className="w-5 h-5 text-slate-400" />}
+              icon={<Lock className="w-5 h-5 text-gray-600" />}
               required
               className="mb-0"
             />
@@ -100,7 +109,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-gray-500">
             Secure dashboard access for authorized users only
           </p>
         </div>

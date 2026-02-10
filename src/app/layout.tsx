@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Montserrat } from "next/font/google";
 
 import { TanstackProvider } from "@/lib/tanstack";
 import { Middleware } from "@/lib/middleware";
@@ -11,11 +12,17 @@ import LoadingPage from "@/components/LoadingPage";
 
 import "@/styles/globals.css";
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "CMS Excelearn",
+  title: "CMS Executrain",
   description: "[INTERNAL USAGE] Content Management System (CMS)",
   icons: {
-    icon: "/logo.png",
+    icon: "/logo-simple-red.png",
   },
 };
 
@@ -26,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={montserrat.variable}>
         <Suspense fallback={<LoadingPage />}>
           <Middleware>
             <TanstackProvider>

@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Input,
   InputNumber,
@@ -72,27 +72,74 @@ const InputForm: React.FC<InputFormProps> = ({
   accept,
   size = "large",
   variant = "outlined",
-  folder = "excelearn/uploads",
+  folder = "executrain/uploads",
   maxSize,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
 
+  const inputRef = useRef<any>(null);
+
   const handleChange = (value: any) => {
+    console.log(value);
     setForm((prev) => ({
       ...prev,
       [name]: value?.target ? value.target.value : value,
     }));
   };
 
+  const handleNumberChange = (value: string) => {
+    // Only allow numbers, backspace, and arrow keys will be handled in onKeyDown
+    setForm((prev) => ({
+      ...prev,
+      [name]: value ? parseInt(value, 10) : 0,
+    }));
+  };
+
+  const handleNumberInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    // Allow: Backspace, Arrow Left/Right, Delete, Tab
+    const allowedKeys = [
+      "Backspace",
+      "ArrowLeft",
+      "ArrowRight",
+      "Delete",
+      "Tab",
+    ];
+
+    // Allow numbers 0-9
+    const isNumber = /^[0-9]$/.test(e.key);
+
+    // Allow Ctrl/Cmd combinations (but not Ctrl+C, Ctrl+V)
+    const isModifier = e.ctrlKey || e.metaKey;
+
+    // Block Ctrl+C and Ctrl+V
+    if ((e.ctrlKey || e.metaKey) && (e.key === "c" || e.key === "v")) {
+      e.preventDefault();
+      return;
+    }
+
+    if (!isNumber && !allowedKeys.includes(e.key) && !isModifier) {
+      e.preventDefault();
+    }
+  };
+
+  const handleNumberInputPaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+  ) => {
+    e.preventDefault();
+    // Block paste completely
+  };
+
   const baseInputClass = cn(
     "transition-all duration-200",
-    "border-slate-200 hover:border-slate-300 focus:border-primary-500",
+    "border-gray-300 hover:border-gray-400 hover:bg-gray-50 focus:border-primary-500 bg-white text-gray-900",
     "rounded-xl",
-    className
+    className,
   );
 
   const labelClass =
-    "text-sm font-medium text-slate-700 mb-2 flex items-center gap-1";
+    "text-sm font-medium text-gray-700 mb-2 flex items-center gap-1";
 
   let inputElement;
 
@@ -129,14 +176,21 @@ const InputForm: React.FC<InputFormProps> = ({
 
     case "number":
       inputElement = (
-        <InputNumber
+        <Input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
           value={form[name] || undefined}
-          onChange={(val) => handleChange(val)}
+          onChange={(e) => handleNumberChange(e.target.value)}
+          onKeyDown={handleNumberInputKeyDown}
+          onPaste={handleNumberInputPaste}
           placeholder={placeholder}
           disabled={disabled}
           size={size}
           variant={variant}
-          className={cn(baseInputClass, "w-full")}
+          prefix={icon && <div className="mr-3">{icon}</div>}
+          className={cn(baseInputClass, "pr-12")}
+          readOnly={false}
         />
       );
       break;
@@ -182,7 +236,7 @@ const InputForm: React.FC<InputFormProps> = ({
           variant={variant}
           mode={multiple ? "multiple" : undefined}
           className={cn("w-full", className)}
-          dropdownClassName="rounded-xl border-slate-200"
+          dropdownClassName="rounded-xl border-gray-200 bg-white"
         >
           {options.map((option) => (
             <Option key={option.value} value={option.value}>
@@ -224,9 +278,10 @@ const InputForm: React.FC<InputFormProps> = ({
 
     case "file":
       const FILE_MAX_SIZE = maxSize || 2 * 1024 * 1024; // Default 2MB
-      const fileSizeLabel = FILE_MAX_SIZE >= 1024 * 1024 
-        ? `${FILE_MAX_SIZE / (1024 * 1024)}MB` 
-        : `${FILE_MAX_SIZE / 1024}KB`;
+      const fileSizeLabel =
+        FILE_MAX_SIZE >= 1024 * 1024
+          ? `${FILE_MAX_SIZE / (1024 * 1024)}MB`
+          : `${FILE_MAX_SIZE / 1024}KB`;
       inputElement = (
         <Upload
           fileList={[]}
@@ -262,7 +317,7 @@ const InputForm: React.FC<InputFormProps> = ({
               <img
                 src={form[name].data}
                 alt="Preview"
-                className="w-full h-32 object-cover rounded-xl border-2 border-slate-200"
+                className="w-full h-32 object-cover rounded-xl border-2 border-gray-200"
               />
               <button
                 type="button"
@@ -278,16 +333,18 @@ const InputForm: React.FC<InputFormProps> = ({
           ) : (
             <div
               className={cn(
-                "border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer",
-                disabled && "opacity-50 cursor-not-allowed"
+                "border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer",
+                disabled && "opacity-50 cursor-not-allowed",
               )}
             >
-              <UploadOutlined className="text-2xl text-slate-400 mb-2" />
-              <p className="text-slate-600">Click or drag files to upload</p>
+              <UploadOutlined className="text-2xl text-gray-400 mb-2" />
+              <p className="text-gray-600">Click or drag files to upload</p>
               {accept && (
-                <p className="text-xs text-slate-400 mt-1">Accepted: {accept}</p>
+                <p className="text-xs text-gray-500 mt-1">Accepted: {accept}</p>
               )}
-              <p className="text-xs text-slate-400 mt-1">Maksimal {fileSizeLabel}</p>
+              <p className="text-xs text-gray-600 mt-1">
+                Maksimal {fileSizeLabel}
+              </p>
             </div>
           )}
         </Upload>
@@ -297,7 +354,7 @@ const InputForm: React.FC<InputFormProps> = ({
     case "file-cloud":
       const IMAGE_MAX_SIZE = 10 * 1024 * 1024; // 10MB untuk image
       const VIDEO_MAX_SIZE = 100 * 1024 * 1024; // 100MB untuk video
-      
+
       const getFileSizeLimit = (file: File) => {
         if (file.type.startsWith("video/")) {
           return VIDEO_MAX_SIZE;
@@ -311,14 +368,16 @@ const InputForm: React.FC<InputFormProps> = ({
         }
         return `${bytes / 1024}KB`;
       };
-      
+
       const handleCloudUpload = async (file: File) => {
         const sizeLimit = getFileSizeLimit(file);
-        
+
         if (file.size > sizeLimit) {
           const fileType = file.type.startsWith("video/") ? "Video" : "Image";
           import("antd").then(({ message }) => {
-            message.error(`Ukuran ${fileType} maksimal ${formatSize(sizeLimit)}`);
+            message.error(
+              `Ukuran ${fileType} maksimal ${formatSize(sizeLimit)}`,
+            );
           });
           return;
         }
@@ -359,22 +418,26 @@ const InputForm: React.FC<InputFormProps> = ({
           disabled={disabled || isUploading}
         >
           {isUploading ? (
-            <div className="border-2 border-dashed border-blue-300 rounded-xl p-6 text-center bg-blue-50">
-              <Spin indicator={<LoadingOutlined className="text-2xl text-blue-500" spin />} />
-              <p className="text-blue-600 mt-2">Mengupload file...</p>
+            <div className="border-2 border-dashed border-primary-300 rounded-xl p-6 text-center bg-primary-950">
+              <Spin
+                indicator={
+                  <LoadingOutlined className="text-2xl text-primary-500" spin />
+                }
+              />
+              <p className="text-primary-400 mt-2">Mengupload file...</p>
             </div>
           ) : form[name]?.url ? (
             <div className="relative">
               {form[name].type?.startsWith("video/") ? (
                 <video
                   src={form[name].url}
-                  className="w-full h-32 object-cover rounded-xl border-2 border-slate-200"
+                  className="w-full h-32 object-cover rounded-xl border-2 border-gray-200"
                 />
               ) : (
                 <img
                   src={form[name].url}
                   alt="Preview"
-                  className="w-full h-32 object-cover rounded-xl border-2 border-slate-200"
+                  className="w-full h-32 object-cover rounded-xl border-2 border-gray-200"
                 />
               )}
               <button
@@ -387,22 +450,25 @@ const InputForm: React.FC<InputFormProps> = ({
               >
                 <X size={14} />
               </button>
-              <p className="text-xs text-slate-500 mt-1 truncate">{form[name].name}</p>
+              <p className="text-xs text-gray-500 mt-1 truncate">
+                {form[name].name}
+              </p>
             </div>
           ) : (
             <div
               className={cn(
-                "border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer",
-                disabled && "opacity-50 cursor-not-allowed"
+                "border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer",
+                disabled && "opacity-50 cursor-not-allowed",
               )}
             >
-              <UploadOutlined className="text-2xl text-slate-400 mb-2" />
-              <p className="text-slate-600">Click or drag files to upload</p>
+              <UploadOutlined className="text-2xl text-gray-400 mb-2" />
+              <p className="text-gray-600">Click or drag files to upload</p>
               {accept && (
-                <p className="text-xs text-slate-400 mt-1">Accepted: {accept}</p>
+                <p className="text-xs text-gray-500 mt-1">Accepted: {accept}</p>
               )}
-              <p className="text-xs text-slate-400 mt-1">
-                Image maks {formatSize(maxSize || IMAGE_MAX_SIZE)}, Video maks {formatSize(VIDEO_MAX_SIZE)}
+              <p className="text-xs text-gray-600 mt-1">
+                Image maks {formatSize(maxSize || IMAGE_MAX_SIZE)}, Video maks{" "}
+                {formatSize(VIDEO_MAX_SIZE)}
               </p>
             </div>
           )}
@@ -416,7 +482,7 @@ const InputForm: React.FC<InputFormProps> = ({
           checked={form[name] || false}
           onChange={(checked) => handleChange(checked)}
           disabled={disabled}
-          className="bg-slate-200"
+          className="bg-gray-200"
         />
       );
       break;
@@ -440,7 +506,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
     case "checkbox":
       inputElement = (
-        <div className="bg-slate-50 border border-slate-300 p-2 rounded-md h-full">
+        <div className="bg-white border border-gray-200 p-2 rounded-md h-full">
           <Checkbox
             key={name}
             className="flex"

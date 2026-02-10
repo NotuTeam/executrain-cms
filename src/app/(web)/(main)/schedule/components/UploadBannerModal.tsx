@@ -144,21 +144,21 @@ export default function UploadBannerModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">
+            <h2 className="text-xl font-bold text-gray-900">
               Upload Banners for Schedules
             </h2>
-            <p className="text-sm text-slate-600 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               {schedules.length} schedules uploaded successfully. Add banners
               for each schedule (optional).
             </p>
           </div>
           <button
             onClick={handleComplete}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-slate-600" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
@@ -172,17 +172,17 @@ export default function UploadBannerModal({
               return (
                 <div
                   key={schedule._id}
-                  className="border border-slate-200 rounded-xl p-4 hover:border-blue-300 transition-colors"
+                  className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors"
                 >
                   <div className="flex items-start gap-4">
                     {/* Schedule Info */}
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h3 className="font-semibold text-slate-800">
+                          <h3 className="font-semibold text-gray-900">
                             {schedule.schedule_name}
                           </h3>
-                          <p className="text-sm text-slate-600 mt-1 line-clamp-2">
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                             {schedule.schedule_description}
                           </p>
                         </div>
@@ -207,18 +207,18 @@ export default function UploadBannerModal({
                             />
                             <button
                               onClick={() => handleRemoveBanner(schedule._id)}
-                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-2 right-2 p-1 bg-red-9500 text-white rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               <X className="w-4 h-4" />
                             </button>
                           </div>
                         ) : (
-                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
-                            <Upload className="w-6 h-6 text-slate-400 mb-2" />
-                            <span className="text-sm text-slate-600">
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                            <Upload className="w-6 h-6 text-gray-600 mb-2" />
+                            <span className="text-sm text-gray-600">
                               Click to upload banner
                             </span>
-                            <span className="text-xs text-slate-400 mt-1">
+                            <span className="text-xs text-gray-600 mt-1">
                               PNG, JPG maksimal 2MB
                             </span>
                             <input
@@ -241,7 +241,7 @@ export default function UploadBannerModal({
                         <button
                           onClick={() => handleSaveBanner(schedule)}
                           disabled={isPending}
-                          className="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="mt-3 w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isPending ? "Saving..." : "Save Banner"}
                         </button>
@@ -255,14 +255,14 @@ export default function UploadBannerModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-slate-200 p-6">
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-gray-600">
               {savedBanners.size} of {schedules.length} banners uploaded
             </p>
             <button
               onClick={handleComplete}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
             >
               Done
             </button>

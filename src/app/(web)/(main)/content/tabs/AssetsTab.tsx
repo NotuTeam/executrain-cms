@@ -61,7 +61,7 @@ export default function AssetsTab() {
     }
 
     const payload: { url?: string; fallback_url?: string } = {};
-    
+
     if (formData.main_file?.url) {
       payload.url = formData.main_file.url;
     }
@@ -81,7 +81,7 @@ export default function AssetsTab() {
         onError: (error: any) => {
           Notification("error", error.message || "Failed to update asset");
         },
-      }
+      },
     );
   };
 
@@ -98,7 +98,7 @@ export default function AssetsTab() {
     return (
       <div className="animate-pulse space-y-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-24 bg-slate-100 rounded-xl"></div>
+          <div key={i} className="h-24 bg-gray-100 rounded-xl"></div>
         ))}
       </div>
     );
@@ -111,7 +111,8 @@ export default function AssetsTab() {
         <div>
           <h3 className="font-semibold text-indigo-900">Dynamic Assets</h3>
           <p className="text-sm text-indigo-700">
-            Manage website background images and media. Files are uploaded directly to Cloudinary (max 10MB for images, 100MB for videos).
+            Manage website background images and media. Files are uploaded
+            directly to Cloudinary (max 10MB for images, 100MB for videos).
           </p>
         </div>
       </div>
@@ -123,13 +124,13 @@ export default function AssetsTab() {
           return (
             <div
               key={asset._id}
-              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
-                <div className="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 relative">
+                <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                   {asset.type === "video" ? (
                     <div className="w-full h-full flex items-center justify-center bg-slate-200">
-                      <Video className="w-8 h-8 text-slate-400" />
+                      <Video className="w-8 h-8 text-gray-600" />
                     </div>
                   ) : (
                     <img
@@ -146,14 +147,14 @@ export default function AssetsTab() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold text-slate-800">
+                    <h4 className="font-semibold text-gray-900">
                       {categoryLabels[asset.category] || asset.name}
                     </h4>
                     <span
                       className={`px-2 py-0.5 text-xs rounded-full ${
                         asset.type === "video"
                           ? "bg-purple-100 text-purple-700"
-                          : "bg-blue-100 text-blue-700"
+                          : "bg-blue-100 text-primary-400"
                       }`}
                     >
                       {asset.type}
@@ -178,7 +179,7 @@ export default function AssetsTab() {
                         form={formData}
                         setForm={setFormData}
                         accept={asset.type === "video" ? "video/*" : "image/*"}
-                        folder="excelearn/assets"
+                        folder="executrain/assets"
                       />
 
                       <InputForm
@@ -188,14 +189,18 @@ export default function AssetsTab() {
                         form={formData}
                         setForm={setFormData}
                         accept="image/*"
-                        folder="excelearn/assets"
+                        folder="executrain/assets"
                       />
 
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleSave(asset._id)}
-                          disabled={isPending || (!formData.main_file?.url && !formData.fallback_file?.url)}
-                          className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={
+                            isPending ||
+                            (!formData.main_file?.url &&
+                              !formData.fallback_file?.url)
+                          }
+                          className="flex items-center gap-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isPending ? (
                             <RefreshCw className="w-4 h-4 animate-spin" />
@@ -207,7 +212,7 @@ export default function AssetsTab() {
                         <button
                           onClick={handleCancel}
                           disabled={isPending}
-                          className="flex items-center gap-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm"
+                          className="flex items-center gap-1 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-slate-200 transition-colors text-sm"
                         >
                           <X className="w-4 h-4" />
                           Cancel
@@ -216,11 +221,11 @@ export default function AssetsTab() {
                     </Form>
                   ) : (
                     <>
-                      <p className="text-sm text-slate-500 truncate mb-1">
+                      <p className="text-sm text-gray-600 truncate mb-1">
                         {asset.url}
                       </p>
                       {asset.fallback_url && (
-                        <p className="text-xs text-slate-400 truncate">
+                        <p className="text-xs text-gray-600 truncate">
                           Fallback: {asset.fallback_url}
                         </p>
                       )}
@@ -232,14 +237,14 @@ export default function AssetsTab() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handlePreview(asset.url)}
-                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-gray-600 hover:text-primary-500 hover:bg-primary-950 rounded-lg transition-colors"
                       title="Preview"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleEdit(asset)}
-                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-gray-600 hover:text-primary-500 hover:bg-primary-950 rounded-lg transition-colors"
                       title="Upload New"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -264,7 +269,7 @@ export default function AssetsTab() {
             <div className="flex justify-end mb-2">
               <button
                 onClick={() => setPreviewUrl(null)}
-                className="p-2 hover:bg-slate-100 rounded-lg"
+                className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>

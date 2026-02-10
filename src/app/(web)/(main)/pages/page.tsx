@@ -20,7 +20,7 @@ export default function PagesPage() {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [selected, setSelected] = useState<any>(null);
   const [showModal, setShowModal] = useState<"NONE" | "PUBLISH" | "DELETE">(
-    "NONE"
+    "NONE",
   );
   const [newPageType, setNewPageType] = useState<string>("Other");
   const router = useRouter();
@@ -56,7 +56,7 @@ export default function PagesPage() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentTarget = observerTarget.current;
@@ -82,8 +82,8 @@ export default function PagesPage() {
     // Redirect ke canvas editor dengan page baru
     router.push(
       `/pages/editor?title=${encodeURIComponent(
-        newPageTitle
-      )}&slug=${slug}&type=${newPageType}&new=true`
+        newPageTitle,
+      )}&slug=${slug}&type=${newPageType}&new=true`,
     );
 
     setShowCreateModal(false);
@@ -125,43 +125,43 @@ export default function PagesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Pages</h1>
-          <p className="text-slate-600 mt-1">
-            Create and manage dynamic pages with drag & drop components
+          <h1 className="text-3xl font-bold text-gray-900">Pages</h1>
+          <p className="text-gray-600 mt-1">
+            Add and manage dynamic pages with drag & drop components
           </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Create Page
+          Add Page
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200">
+      <div className="bg-white rounded-2xl p-6 border border-gray-200">
         <div className="flex items-center gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
             <input
               type="text"
               placeholder="Search pages..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-gray-100 text-gray-900 placeholder:text-gray-600"
             />
           </div>
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors"
             >
-              <Filter className="w-5 h-5 text-slate-500" />
+              <Filter className="w-5 h-5 text-gray-600" />
               <span className="capitalize">{statusFilter}</span>
             </button>
             {showFilterDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
                 {["All", "Published", "Draft"].map((status) => (
                   <button
                     key={status}
@@ -169,8 +169,10 @@ export default function PagesPage() {
                       setStatusFilter(status as any);
                       setShowFilterDropdown(false);
                     }}
-                    className={`w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors first:rounded-t-xl last:rounded-b-xl capitalize ${
-                      statusFilter === status ? "bg-blue-50 text-blue-600" : ""
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors first:rounded-t-xl last:rounded-b-xl capitalize ${
+                      statusFilter === status
+                        ? "bg-primary-950 text-primary-500"
+                        : ""
                     }`}
                   >
                     {status}
@@ -185,14 +187,14 @@ export default function PagesPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
         </div>
       )}
 
       {/* Error State */}
       {isError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-          <p className="text-red-600">
+        <div className="bg-red-950 border border-red-900 rounded-xl p-6 text-center">
+          <p className="text-red-400">
             Failed to load pages. Please try again.
           </p>
           <button
@@ -206,15 +208,15 @@ export default function PagesPage() {
 
       {/* Empty State */}
       {!isLoading && !isError && allPages.length === 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-600" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {searchTerm ? "No pages found" : "No pages yet"}
             </h3>
-            <p className="text-slate-600 mb-6">
+            <p className="text-gray-600 mb-6">
               {searchTerm
                 ? "Try adjusting your search or filters"
                 : "Get started by creating your first page"}
@@ -222,10 +224,10 @@ export default function PagesPage() {
             {!searchTerm && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
               >
                 <Plus className="w-5 h-5" />
-                Create Page
+                Add Page
               </button>
             )}
           </div>
@@ -239,25 +241,25 @@ export default function PagesPage() {
             {allPages.map((page: any) => (
               <div
                 key={page._id}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group"
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all group"
               >
                 {/* Thumbnail */}
                 <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200">
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                    <h1 className="font-semibold text-gray-500 px-4 text-center">
+                    <h1 className="font-semibold text-gray-600 px-4 text-center">
                       {page.name}
                     </h1>
                     <button
                       onClick={() => handleEditPage(page)}
-                      className="opacity-0 group-hover:opacity-100 bg-white text-slate-800 px-4 py-2 rounded-lg font-medium transition-all transform scale-95 group-hover:scale-100 absolute"
+                      className="opacity-0 group-hover:opacity-100 bg-white text-gray-900 px-4 py-2 rounded-lg font-medium transition-all transform scale-95 group-hover:scale-100 absolute"
                     >
                       Edit Page
                     </button>
                     <span
                       className={`top-3 right-3 absolute inline-flex px-2 py-1 rounded-full text-xs font-medium capitalize ${
                         page.status.toUpperCase() === "PUBLISHED"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? "bg-green-100 text-green-400"
+                          : "bg-yellow-100 text-yellow-400"
                       }`}
                     >
                       {page.status}
@@ -268,7 +270,7 @@ export default function PagesPage() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-500 truncate">
+                    <span className="text-sm text-gray-600 truncate">
                       /{page.path}
                     </span>
 
@@ -279,13 +281,13 @@ export default function PagesPage() {
                           setShowModal("PUBLISH");
                         }}
                         disabled={publishPending}
-                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                         title="Preview"
                       >
                         {publishPending ? (
-                          <Loader2 className="w-4 h-4 text-slate-500 animate-spin" />
+                          <Loader2 className="w-4 h-4 text-gray-600 animate-spin" />
                         ) : (
-                          <Eye className="w-4 h-4 text-slate-500" />
+                          <Eye className="w-4 h-4 text-gray-600" />
                         )}
                       </button>
                       <button
@@ -294,7 +296,7 @@ export default function PagesPage() {
                           setShowModal("DELETE");
                         }}
                         disabled={deletePending}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                        className="p-2 hover:bg-red-950 rounded-lg transition-colors disabled:opacity-50"
                         title="Delete"
                       >
                         {deletePending ? (
@@ -305,7 +307,7 @@ export default function PagesPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="text-xs text-slate-400 mt-2">
+                  <div className="text-xs text-gray-600 mt-2">
                     Updated: {new Date(page.updated_at).toLocaleDateString()}
                   </div>
                 </div>
@@ -316,26 +318,26 @@ export default function PagesPage() {
           {/* Infinite Scroll Trigger */}
           <div ref={observerTarget} className="flex justify-center py-8">
             {isFetchingNextPage && (
-              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-primary-500" />
             )}
             {!hasNextPage && allPages.length > 0 && (
-              <p className="text-slate-500 text-sm">No more pages to load</p>
+              <p className="text-gray-600 text-sm">No more pages to load</p>
             )}
           </div>
         </>
       )}
 
-      {/* Create Page Modal */}
+      {/* Add Page Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
-              Create New Page
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Add New Page
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Page Title *
                 </label>
                 <input
@@ -345,17 +347,17 @@ export default function PagesPage() {
                     setNewPageTitle(e.target.value);
                     if (!newPageSlug) {
                       setNewPageSlug(
-                        e.target.value.toLowerCase().replace(/\s+/g, "-")
+                        e.target.value.toLowerCase().replace(/\s+/g, "-"),
                       );
                     }
                   }}
                   placeholder="Enter page title"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   URL Slug
                 </label>
                 <input
@@ -363,28 +365,28 @@ export default function PagesPage() {
                   value={newPageSlug}
                   onChange={(e) => setNewPageSlug(e.target.value)}
                   placeholder="page-url-slug"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   URL: /{newPageSlug || "page-url-slug"}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Page Type *
                 </label>
                 <select
                   value={newPageType}
                   onChange={(e) => setNewPageType(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="Other">Other</option>
                   <option value="Schedule">Schedule</option>
                   <option value="Product">Product</option>
                   <option value="About Us">About Us</option>
                 </select>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   Select the category for this page. This will affect navbar
                   display.
                 </p>
@@ -394,16 +396,16 @@ export default function PagesPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreatePage}
                 disabled={!newPageTitle.trim()}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create & Edit
+                Add & Edit
               </button>
             </div>
           </div>
@@ -414,12 +416,12 @@ export default function PagesPage() {
       {selected && showModal !== "NONE" ? (
         <div className="fixed bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 top-0 right-0 left-0 bottom-0 m-0">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center">
-            <h2 className="text-xl font-bold text-slate-800 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               {showModal === "DELETE"
                 ? "Delete Page"
                 : selected.status.toUpperCase() === "DRAFT"
-                ? "Publish Page"
-                : "Unpublish Page"}
+                  ? "Publish Page"
+                  : "Unpublish Page"}
             </h2>
             {showModal === "DELETE" ? (
               <p>Are you sure you want to delete this page?</p>
@@ -435,13 +437,13 @@ export default function PagesPage() {
                 onClick={() => {
                   setSelected(null);
                 }}
-                className="px-10 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-10 py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={deletePending || publishPending}
               >
                 No
               </button>
               <button
-                className="flex items-center justify-center gap-2 px-10 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center justify-center gap-2 px-10 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 type="button"
                 onClick={() => {
                   if (showModal === "DELETE") {

@@ -8,9 +8,13 @@ const headers = {
   },
 };
 
-export async function ScheduleListService() {
+export async function ScheduleListService(product_id?: string) {
   try {
-    const { data: response } = await AxiosClient.get("/schedule/list");
+    const url = product_id
+      ? `/schedule/list?product_id=${product_id}`
+      : "/schedule/list";
+
+    const { data: response } = await AxiosClient.get(url);
 
     const { status, message, data } = response;
 
@@ -74,10 +78,11 @@ export async function CreateService(payload: any) {
   }
 }
 
-export async function CreateBulkService(payload: any) {
+export async function CreateBulkService(payload: any, product_id: string) {
   try {
     const { data: response } = await AxiosClient.post("/schedule/add-bulk", {
       data: payload,
+      product_id,
     });
 
     const { status, message, data } = response;

@@ -189,7 +189,7 @@ export default function MetadataForm({
           />
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Keywords
             </label>
             <div className="flex gap-2 mb-3">
@@ -204,12 +204,12 @@ export default function MetadataForm({
                   }
                 }}
                 placeholder="Add a keyword..."
-                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <button
                 type="button"
                 onClick={handleAddKeyword}
-                className="px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
               >
                 Add
               </button>
@@ -219,7 +219,7 @@ export default function MetadataForm({
                 {formData.keywords.map((keyword: string, index: number) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-500 rounded-full text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-primary-950 text-primary-400 rounded-full text-sm"
                   >
                     {keyword}
                     <button
@@ -273,7 +273,7 @@ export default function MetadataForm({
       label: "Open Graph",
       children: (
         <div className="space-y-4">
-          <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-900 mb-4">
+          <div className="bg-primary-950 p-3 rounded-lg text-sm text-blue-900 mb-4">
             Use for Facebook, LinkedIn, and other social platforms
           </div>
 
@@ -309,7 +309,7 @@ export default function MetadataForm({
               <img
                 src={formData.og_image}
                 alt="OG Preview"
-                className="w-full max-w-sm h-auto rounded-lg border border-slate-200"
+                className="w-full max-w-sm h-auto rounded-lg border border-gray-200"
                 onError={() => {}}
               />
             </div>
@@ -336,7 +336,7 @@ export default function MetadataForm({
       label: "Twitter Card",
       children: (
         <div className="space-y-4">
-          <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-900 mb-4">
+          <div className="bg-primary-950 p-3 rounded-lg text-sm text-blue-900 mb-4">
             Configure how your link appears when shared on Twitter/X
           </div>
 
@@ -409,7 +409,7 @@ export default function MetadataForm({
                 }
                 className="w-4 h-4 rounded"
               />
-              <span className="text-sm text-slate-700">
+              <span className="text-sm text-gray-600">
                 Allow search engines to index this page
               </span>
             </label>
@@ -429,7 +429,7 @@ export default function MetadataForm({
                 }
                 className="w-4 h-4 rounded"
               />
-              <span className="text-sm text-slate-700">
+              <span className="text-sm text-gray-600">
                 Allow search engines to follow links on this page
               </span>
             </label>
@@ -458,11 +458,11 @@ export default function MetadataForm({
         <Tabs items={tabItems} className="metadata-tabs" />
       </Form>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
         <button
           type="button"
           onClick={onSuccess}
-          className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+          className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
         >
           Cancel
         </button>
@@ -472,7 +472,7 @@ export default function MetadataForm({
             type="button"
             onClick={handlePublish}
             disabled={isPublishing}
-            className="flex-1 px-4 py-2 bg-blue-400 text-white rounded-xl hover:bg-blue-500 transition-colors"
+            className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             {isPublishing ? "Publishing..." : "Publish"}
           </button>
@@ -482,7 +482,7 @@ export default function MetadataForm({
           type="button"
           onClick={handleSubmit}
           disabled={isPending}
-          className="flex-1 px-4 py-2 bg-blue-400 text-white rounded-xl hover:bg-blue-500 transition-colors"
+          className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
         >
           {isCreating || isUpdating ? "Saving..." : "Save"}
         </button>

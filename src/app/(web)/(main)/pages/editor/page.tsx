@@ -569,7 +569,7 @@ export default function PageEditor() {
                 <div key={child.id}>{renderComponent(child)}</div>
               ))
             ) : (
-              <div className="col-span-full flex items-center justify-center text-slate-400 text-sm py-8">
+              <div className="col-span-full flex items-center justify-center text-gray-600 text-sm py-8">
                 Drop components here
               </div>
             )}
@@ -589,21 +589,21 @@ export default function PageEditor() {
   if (isLoadingDetail && pageId) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex bg-slate-50 relative overflow-hidden">
+    <div className="h-screen flex bg-gray-100 relative overflow-hidden">
       {/* Component Library Panel */}
       {showComponentPanel && (
-        <div className="w-64 lg:w-80 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30">
-          <div className="p-4 border-b border-slate-200 flex justify-between items-center">
-            <h2 className="font-semibold text-slate-800">Components</h2>
+        <div className="w-64 lg:w-80 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-30">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="font-semibold text-gray-900">Components</h2>
             <button
               onClick={() => setShowComponentPanel(false)}
-              className="lg:hidden p-1 hover:bg-slate-100 rounded"
+              className="lg:hidden p-1 hover:bg-gray-100 rounded"
             >
               <X className="w-4 h-4" />
             </button>
@@ -612,7 +612,7 @@ export default function PageEditor() {
           <div className="flex-1 overflow-y-auto p-4">
             {["Basic", "Media", "Interactive", "Layout"].map((category) => (
               <div key={category} className="mb-6">
-                <h3 className="text-sm font-medium text-slate-600 mb-3">
+                <h3 className="text-sm font-medium text-gray-600 mb-3">
                   {category}
                 </h3>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -626,10 +626,10 @@ export default function PageEditor() {
                           draggable
                           onDragStart={() => handleDragStart(component)}
                           onDragEnd={handleDragEnd}
-                          className="p-3 border border-slate-200 rounded-lg cursor-grab hover:bg-slate-50 transition-colors active:cursor-grabbing hover:border-blue-300"
+                          className="p-3 border border-gray-200 rounded-lg cursor-grab hover:bg-gray-100 transition-colors active:cursor-grabbing hover:border-blue-300"
                         >
-                          <Icon className="w-5 h-5 text-slate-600 mb-2" />
-                          <p className="text-xs font-medium text-slate-700">
+                          <Icon className="w-5 h-5 text-gray-600 mb-2" />
+                          <p className="text-xs font-medium text-gray-600">
                             {component.name}
                           </p>
                         </div>
@@ -645,24 +645,24 @@ export default function PageEditor() {
       {/* Main Editor */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Toolbar */}
-        <div className="bg-white border-b border-slate-200 p-4 flex-shrink-0">
+        <div className="bg-white border-b border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               {!showComponentPanel && (
                 <button
                   onClick={() => setShowComponentPanel(true)}
-                  className="lg:hidden p-2 bg-slate-100 rounded-lg"
+                  className="lg:hidden p-2 bg-gray-100 rounded-lg"
                 >
                   <Layout className="w-4 h-4" />
                 </button>
               )}
               <button
                 onClick={() => router.back()}
-                className="p-2 bg-white border border-slate-200 rounded-lg shadow-sm transition-all duration-300 hover:bg-slate-50"
+                className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300 hover:bg-gray-100"
               >
-                <MoveLeft className="w-4 h-4 text-slate-600" />
+                <MoveLeft className="w-4 h-4 text-gray-600" />
               </button>
-              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode("desktop")}
                   className={`p-2 rounded transition-all ${
@@ -699,7 +699,7 @@ export default function PageEditor() {
               </div>
             </div>
 
-            <h1 className="font-semibold text-slate-800 hidden md:block truncate max-w-xs">
+            <h1 className="font-semibold text-gray-900 hidden md:block truncate max-w-xs">
               {pageData.name}
             </h1>
 
@@ -707,7 +707,7 @@ export default function PageEditor() {
               <button
                 onClick={savePageData}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
               >
                 {isSaving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -720,7 +720,7 @@ export default function PageEditor() {
               </button>
               {/* <button
                 onClick={() => setShowMetadataPanel(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-white rounded-lg hover:bg-gray-200 transition-colors"
               >
                 <span className="hidden sm:inline">SEO</span>
               </button> */}
@@ -729,7 +729,7 @@ export default function PageEditor() {
         </div>
 
         {/* Canvas */}
-        <div className="flex-1 overflow-auto p-4 lg:p-8 bg-slate-100">
+        <div className="flex-1 overflow-auto p-4 lg:p-8 bg-gray-100">
           <div
             className={`mx-auto bg-white rounded-lg shadow-lg min-h-[600px] transition-all duration-300 ${getViewportClass()}`}
           >
@@ -740,7 +740,7 @@ export default function PageEditor() {
               onDragOver={handleDragOver}
             >
               {pageData.template.length === 0 ? (
-                <div className="text-center py-20 text-slate-400 border-2 border-dashed border-slate-200 rounded-lg">
+                <div className="text-center py-20 text-gray-600 border-2 border-dashed border-gray-200 rounded-lg">
                   <Layout className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium mb-2">Empty Canvas</p>
                   <p className="text-sm">
@@ -802,14 +802,14 @@ export default function PageEditor() {
 
                             {/* Drag Handle */}
                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <div className="bg-slate-800 text-white p-1.5 rounded cursor-grab active:cursor-grabbing shadow-lg">
+                              <div className="bg-gray-100 text-white p-1.5 rounded cursor-grab active:cursor-grabbing shadow-lg">
                                 <GripVertical className="w-4 h-4" />
                               </div>
                             </div>
 
                             {/* Component Label */}
                             {selectedComponent === component.id && (
-                              <div className="absolute -top-9 left-0 flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs z-10 shadow-lg">
+                              <div className="absolute -top-9 left-0 flex items-center gap-2 bg-primary-600 text-white px-3 py-1.5 rounded-lg text-xs z-10 shadow-lg">
                                 <span className="capitalize font-medium">
                                   {component.type}
                                 </span>
@@ -822,7 +822,7 @@ export default function PageEditor() {
                                     e.stopPropagation();
                                     deleteComponent(component.id);
                                   }}
-                                  className="ml-1 hover:bg-blue-700 rounded px-1.5 py-0.5 transition-colors"
+                                  className="ml-1 hover:bg-primary-700 rounded px-1.5 py-0.5 transition-colors"
                                 >
                                   <X className="w-3 h-3" />
                                 </button>
@@ -842,24 +842,24 @@ export default function PageEditor() {
       {/* Properties Panel - Rest of the code stays the same */}
       {selectedComponentData &&
         (showPropertiesPanel || window.innerWidth >= 1024) && (
-          <div className="w-80 bg-white border-l border-slate-200 flex flex-col flex-shrink-0 lg:relative absolute right-0 top-0 h-full z-20 shadow-2xl lg:shadow-none">
-            <div className="p-4 border-b border-slate-200 flex justify-between items-center">
-              <h2 className="font-semibold text-slate-800">Properties</h2>
+          <div className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0 lg:relative absolute right-0 top-0 h-full z-20 shadow-2xl lg:shadow-none">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="font-semibold text-gray-900">Properties</h2>
               <button
                 onClick={() => {
                   setSelectedComponent(null);
                   setShowPropertiesPanel(false);
                 }}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-4 h-4 text-slate-600" />
+                <X className="w-4 h-4 text-gray-600" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
               {/* Grid Column Control */}
-              <div className="bg-slate-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-slate-700 mb-3">
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <label className="block text-sm font-medium text-gray-600 mb-3">
                   Width (Grid Columns)
                 </label>
                 <input
@@ -875,9 +875,9 @@ export default function PageEditor() {
                   }
                   className="w-full accent-blue-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                 />
-                <div className="flex justify-between text-xs text-slate-500 mt-2">
+                <div className="flex justify-between text-xs text-gray-600 mt-2">
                   <span>1 col</span>
-                  <span className="font-semibold text-blue-600 text-sm">
+                  <span className="font-semibold text-primary-500 text-sm">
                     {selectedComponentData.gridColumn} / 12 (
                     {Math.round((selectedComponentData.gridColumn / 12) * 100)}
                     %)
@@ -891,7 +891,7 @@ export default function PageEditor() {
                 selectedComponentData.type === "heading" ||
                 selectedComponentData.type === "button") && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-2">
                     Text Alignment
                   </label>
                   <div className="flex gap-2">
@@ -909,8 +909,8 @@ export default function PageEditor() {
                         }
                         className={`flex-1 p-2 border rounded-lg transition-colors ${
                           selectedComponentData.props.textAlign === value
-                            ? "bg-blue-50 border-blue-200 text-blue-600"
-                            : "border-slate-200 hover:bg-slate-50"
+                            ? "bg-primary-950 border-blue-200 text-primary-500"
+                            : "border-gray-200 hover:bg-gray-100"
                         }`}
                       >
                         <Icon className="w-4 h-4 mx-auto" />
@@ -922,13 +922,13 @@ export default function PageEditor() {
 
               {/* Background Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Background Image
                 </label>
                 <div className="space-y-2">
                   <button
                     onClick={() => bgImageInputRef.current?.click()}
-                    className="w-full p-3 border-2 border-dashed border-slate-200 rounded-lg hover:border-blue-300 transition-colors flex items-center justify-center gap-2 text-slate-600 hover:text-blue-600"
+                    className="w-full p-3 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-primary-500"
                   >
                     <Upload className="w-4 h-4" />
                     Upload Background
@@ -946,7 +946,7 @@ export default function PageEditor() {
                             backgroundImage: null,
                           })
                         }
-                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                        className="absolute top-1 right-1 bg-red-9500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -960,7 +960,7 @@ export default function PageEditor() {
                 selectedComponentData.type === "heading") && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Content
                     </label>
                     <textarea
@@ -970,13 +970,13 @@ export default function PageEditor() {
                           content: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       rows={3}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Font Size
                     </label>
                     <input
@@ -989,12 +989,12 @@ export default function PageEditor() {
                           fontSize: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Text Color
                     </label>
                     <input
@@ -1005,7 +1005,7 @@ export default function PageEditor() {
                           color: e.target.value,
                         })
                       }
-                      className="w-full h-10 border border-slate-200 rounded-lg cursor-pointer"
+                      className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer"
                     />
                   </div>
                 </>
@@ -1015,13 +1015,13 @@ export default function PageEditor() {
               {selectedComponentData.type === "image" && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Image Source
                     </label>
                     <div className="space-y-3">
                       {pageData.uploadedImages.length > 0 && (
                         <div>
-                          <p className="text-xs text-slate-600 mb-2">
+                          <p className="text-xs text-gray-600 mb-2">
                             Choose from uploaded:
                           </p>
                           <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
@@ -1053,14 +1053,14 @@ export default function PageEditor() {
 
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full p-3 border-2 border-dashed border-slate-200 rounded-lg hover:border-blue-300 transition-colors flex items-center justify-center gap-2 text-slate-600 hover:text-blue-600"
+                        className="w-full p-3 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-primary-500"
                       >
                         <Upload className="w-4 h-4" />
                         Upload New Image
                       </button>
 
                       <div>
-                        <p className="text-xs text-slate-600 mb-2">
+                        <p className="text-xs text-gray-600 mb-2">
                           Or enter URL:
                         </p>
                         <input
@@ -1072,14 +1072,14 @@ export default function PageEditor() {
                             })
                           }
                           placeholder="https://example.com/image.jpg"
-                          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Alt Text
                     </label>
                     <input
@@ -1090,12 +1090,12 @@ export default function PageEditor() {
                           alt: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Border Radius
                     </label>
                     <input
@@ -1108,7 +1108,7 @@ export default function PageEditor() {
                           borderRadius: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </>
@@ -1118,7 +1118,7 @@ export default function PageEditor() {
               {selectedComponentData.type === "button" && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Button Text
                     </label>
                     <input
@@ -1129,12 +1129,12 @@ export default function PageEditor() {
                           text: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Font Size
                     </label>
                     <input
@@ -1147,12 +1147,12 @@ export default function PageEditor() {
                           fontSize: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Border Radius
                     </label>
                     <input
@@ -1165,12 +1165,12 @@ export default function PageEditor() {
                           borderRadius: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Background Color
                     </label>
                     <input
@@ -1181,12 +1181,12 @@ export default function PageEditor() {
                           backgroundColor: e.target.value,
                         })
                       }
-                      className="w-full h-10 border border-slate-200 rounded-lg cursor-pointer"
+                      className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Text Color
                     </label>
                     <input
@@ -1197,7 +1197,7 @@ export default function PageEditor() {
                           color: e.target.value,
                         })
                       }
-                      className="w-full h-10 border border-slate-200 rounded-lg cursor-pointer"
+                      className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer"
                     />
                   </div>
                 </>
@@ -1207,7 +1207,7 @@ export default function PageEditor() {
               {/* {selectedComponentData.type === "list" && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       List Items
                     </label>
                     <div className="space-y-2">
@@ -1226,7 +1226,7 @@ export default function PageEditor() {
                                   items: newItems,
                                 });
                               }}
-                              className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                             <button
                               onClick={() => {
@@ -1238,7 +1238,7 @@ export default function PageEditor() {
                                   items: newItems,
                                 });
                               }}
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 text-red-500 hover:bg-red-950 rounded-lg transition-colors"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -1257,7 +1257,7 @@ export default function PageEditor() {
                             items: newItems,
                           });
                         }}
-                        className="w-full p-2 border-2 border-dashed border-slate-200 rounded-lg hover:border-blue-300 text-slate-600 hover:text-blue-600 transition-colors"
+                        className="w-full p-2 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 text-gray-600 hover:text-primary-500 transition-colors"
                       >
                         + Add Item
                       </button>
@@ -1265,7 +1265,7 @@ export default function PageEditor() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       List Style
                     </label>
                     <select
@@ -1275,7 +1275,7 @@ export default function PageEditor() {
                           listStyle: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="disc">Disc</option>
                       <option value="circle">Circle</option>
@@ -1286,7 +1286,7 @@ export default function PageEditor() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Font Size
                     </label>
                     <input
@@ -1299,12 +1299,12 @@ export default function PageEditor() {
                           fontSize: parseInt(e.target.value),
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Text Color
                     </label>
                     <input
@@ -1315,7 +1315,7 @@ export default function PageEditor() {
                           color: e.target.value,
                         })
                       }
-                      className="w-full h-10 border border-slate-200 rounded-lg cursor-pointer"
+                      className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer"
                     />
                   </div>
                 </>
@@ -1324,7 +1324,7 @@ export default function PageEditor() {
               {/* Common properties */}
               {!selectedComponentData.props.backgroundImage && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-2">
                     Background Color
                   </label>
                   <input
@@ -1337,13 +1337,13 @@ export default function PageEditor() {
                         backgroundColor: e.target.value,
                       })
                     }
-                    className="w-full h-10 border border-slate-200 rounded-lg cursor-pointer"
+                    className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Padding
                 </label>
                 <input
@@ -1356,9 +1356,9 @@ export default function PageEditor() {
                       padding: parseInt(e.target.value),
                     })
                   }
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
-                <div className="text-xs text-slate-500 mt-1">
+                <div className="text-xs text-gray-600 mt-1">
                   Spacing around content (px)
                 </div>
               </div>
@@ -1371,23 +1371,23 @@ export default function PageEditor() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-800">SEO Metadata</h2>
+              <h2 className="text-xl font-bold text-gray-900">SEO Metadata</h2>
               <button
                 onClick={() => setShowMetadataPanel(false)}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-slate-600" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
 
             {/* <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Basic SEO
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Meta Title
                     </label>
                     <input
@@ -1400,15 +1400,15 @@ export default function PageEditor() {
                         }))
                       }
                       placeholder="Enter page title for SEO (50-60 characters)"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       {metadata.metaTitle.length}/60 characters
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Meta Description
                     </label>
                     <textarea
@@ -1421,15 +1421,15 @@ export default function PageEditor() {
                       }
                       placeholder="Enter page description for search engines (150-160 characters)"
                       rows={3}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       {metadata.metaDescription.length}/160 characters
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Meta Keywords
                     </label>
                     <input
@@ -1442,19 +1442,19 @@ export default function PageEditor() {
                         }))
                       }
                       placeholder="Enter keywords separated by commas"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Open Graph (Social Media)
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       OG Title
                     </label>
                     <input
@@ -1467,12 +1467,12 @@ export default function PageEditor() {
                         }))
                       }
                       placeholder="Title for social media sharing"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       OG Description
                     </label>
                     <textarea
@@ -1485,12 +1485,12 @@ export default function PageEditor() {
                       }
                       placeholder="Description for social media sharing"
                       rows={2}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       OG Image URL
                     </label>
                     <input
@@ -1503,19 +1503,19 @@ export default function PageEditor() {
                         }))
                       }
                       placeholder="Image URL for social media sharing"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Advanced SEO
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Canonical URL
                     </label>
                     <input
@@ -1528,12 +1528,12 @@ export default function PageEditor() {
                         }))
                       }
                       placeholder="Canonical URL for this page"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                       Robots Meta Tag
                     </label>
                     <select
@@ -1544,7 +1544,7 @@ export default function PageEditor() {
                           robotsIndex: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="index,follow">Index, Follow</option>
                       <option value="noindex,nofollow">
@@ -1558,16 +1558,16 @@ export default function PageEditor() {
               </div>
             </div> */}
 
-            <div className="flex gap-3 mt-8 pt-6 border-t border-slate-200">
+            <div className="flex gap-3 mt-8 pt-6 border-t border-gray-200">
               <button
                 onClick={() => setShowMetadataPanel(false)}
-                className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => setShowMetadataPanel(false)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
               >
                 Save Metadata
               </button>

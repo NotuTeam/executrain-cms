@@ -22,7 +22,7 @@ export function servicesToCategories(services: any[]): Array<{
 
   return services.map((service) => ({
     label: service.service_name,
-    value: serviceToCategoryFormat(service.service_name),
+    value: service.slug || service.service_name, // Use slug if available, fallback to service_name
   }));
 }
 

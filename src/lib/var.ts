@@ -9,6 +9,8 @@ import {
   Megaphone,
   Package,
   SearchCheck,
+  FileText,
+  Briefcase,
 } from "lucide-react";
 
 export const ValidPath = [
@@ -21,26 +23,62 @@ export const ValidPath = [
   "content",
   "product",
   "promotion",
+  "article",
+  "career",
 ];
 export const DefaultMenu = [
   { id: 1, text: "Home", icon: Home, href: "/" },
-  { id: 2, text: "Services", icon: Settings, href: "/services" },
-  { id: 3, text: "Product", icon: Package, href: "/product" },
-  { id: 4, text: "Schedule", icon: BarChart3, href: "/schedule" },
-  { id: 5, text: "Promotion", icon: Megaphone, href: "/promotion" },
-  { id: 6, text: "Content", icon: Image, href: "/content" },
-  { id: 7, text: "Pages", icon: Layers, href: "/pages" },
+  {
+    id: 2,
+    text: "Management",
+    icon: Settings,
+    children: [
+      { id: 21, text: "Services", icon: Settings, href: "/services" },
+      { id: 22, text: "Product", icon: Package, href: "/product" },
+      { id: 23, text: "Schedule", icon: BarChart3, href: "/schedule" },
+      { id: 24, text: "Promotion", icon: Megaphone, href: "/promotion" },
+    ],
+  },
+  {
+    id: 3,
+    text: "Content",
+    icon: Image,
+    children: [
+      { id: 31, text: "Content Management", icon: Image, href: "/content" },
+      { id: 32, text: "Pages", icon: Layers, href: "/pages" },
+      { id: 33, text: "Article", icon: FileText, href: "/article" },
+    ],
+  },
 ];
+
 export const SuperMenu = [
   { id: 1, text: "Home", icon: Home, href: "/" },
-  { id: 2, text: "Users", icon: Users, href: "/users" },
-  { id: 3, text: "Services", icon: Settings, href: "/services" },
-  { id: 4, text: "Product", icon: Package, href: "/product" },
-  { id: 5, text: "Schedule", icon: BarChart3, href: "/schedule" },
-  { id: 6, text: "Promotion", icon: Megaphone, href: "/promotion" },
-  { id: 7, text: "Content", icon: Image, href: "/content" },
-  { id: 8, text: "Pages", icon: Layers, href: "/pages" },
-  { id: 9, text: "Metadata", icon: SearchCheck, href: "/metadata" },
+  { id: 2, text: "Users", icon: Users, children: [
+    { id: 21, text: "Access", icon: Users, href: "/users" },
+  ]},
+  {
+    id: 3,
+    text: "Management",
+    icon: Settings,
+    children: [
+      { id: 31, text: "Services", icon: Settings, href: "/services" },
+      { id: 32, text: "Product", icon: Package, href: "/product" },
+      { id: 33, text: "Schedule", icon: BarChart3, href: "/schedule" },
+      { id: 34, text: "Promotion", icon: Megaphone, href: "/promotion" },
+    ],
+  },
+  {
+    id: 4,
+    text: "Content",
+    icon: Image,
+    children: [
+      { id: 41, text: "Content Management", icon: Image, href: "/content" },
+      { id: 42, text: "Pages", icon: Layers, href: "/pages" },
+      { id: 43, text: "Article", icon: FileText, href: "/article" },
+    ],
+  },
+  { id: 5, text: "Career", icon: Briefcase, href: "/career" },
+  { id: 6, text: "Metadata", icon: SearchCheck, href: "/metadata" },
 ];
 
 export const LocalToken = "excutrain_auth_token";

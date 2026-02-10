@@ -3,14 +3,14 @@
 import type { Config } from "tailwindcss";
 
 // Primary brand color palette
-const PRIMARY_COLOR = "#00AEEF";
+const PRIMARY_COLOR = "#bf1f40";
 
 // Generate color shades from primary color
 const generateColorShades = (hex: string) => {
   // Convert hex to RGB
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
+  const r = Number.parseInt(hex.slice(1, 3), 16);
+  const g = Number.parseInt(hex.slice(3, 5), 16);
+  const b = Number.parseInt(hex.slice(5, 7), 16);
 
   return {
     50: `rgb(${Math.round(r + (255 - r) * 0.95)} ${Math.round(g + (255 - g) * 0.95)} ${Math.round(b + (255 - b) * 0.95)} / 1)`,
@@ -30,11 +30,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-montserrat)", "Arial", "Helvetica", "sans-serif"],
+      },
       colors: {
         primary: generateColorShades(PRIMARY_COLOR),
       },
       animation: {
-        "spin-slow": "spin 20s linear infinite",
+        "spin-slow": "spin 10s linear infinite",
       },
       keyframes: {
         spin: {

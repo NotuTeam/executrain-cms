@@ -12,7 +12,7 @@
    - blue-600 → primary-600
    - blue-700 → primary-700
    
-   Base Color: #00AEEF (Cyan)
+   Base Color: #C10302 (Red)
    
    The primary color palette is defined in tailwind.config.ts
    and automatically generated from the PRIMARY_COLOR constant.
@@ -20,13 +20,13 @@
 
 /* If you need to use the primary color in inline styles, reference it like this: */
 :root {
-  --color-primary-50: rgb(230, 245, 250);
-  --color-primary-100: rgb(207, 240, 250);
-  --color-primary-200: rgb(165, 230, 250);
-  --color-primary-300: rgb(115, 215, 250);
-  --color-primary-500: #00AEEF;
-  --color-primary-600: #0090c7);
-  --color-primary-700: #0076a0);
+  --color-primary-50: rgb(246, 227, 227);
+  --color-primary-100: rgb(236, 199, 199);
+  --color-primary-200: rgb(217, 160, 161);
+  --color-primary-300: rgb(193, 117, 118);
+  --color-primary-500: #C10302;
+  --color-primary-600: #AC0302;
+  --color-primary-700: #910202;
 }
 
 /* Usage in styles:

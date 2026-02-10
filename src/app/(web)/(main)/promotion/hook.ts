@@ -69,7 +69,7 @@ export const useCreatePromo = () => {
           data: response.data,
         };
       } catch (error: any) {
-        throw new Error(error.message || "Success to Create Promo");
+        throw new Error(error.message || "Success to Add Promo");
       }
     },
   });

@@ -10,12 +10,12 @@ import {
   DeleteService,
 } from "./handler";
 
-export const useSchedules = (): UseQueryResult<any> => {
+export const useSchedules = (product_id?: string): UseQueryResult<any> => {
   return useQuery({
-    queryKey: ["schedule_list"],
+    queryKey: ["schedule_list", product_id],
     queryFn: async () => {
       try {
-        const { data, status } = await ScheduleListService();
+        const { data, status } = await ScheduleListService(product_id);
 
         if (status !== 200) throw new Error();
 
@@ -69,9 +69,9 @@ export const useCreateSchedule = () => {
 export const useCreateBulkSchedule = () => {
   return useMutation({
     mutationKey: ["create_bulk_schedule"],
-    mutationFn: async (payload: any) => {
+    mutationFn: async ({ payload, product_id }: { payload: any; product_id: string }) => {
       try {
-        const response: any = await CreateBulkService(payload);
+        const response: any = await CreateBulkService(payload, product_id);
 
         if (response.status !== 201) throw new Error(response.message);
 
