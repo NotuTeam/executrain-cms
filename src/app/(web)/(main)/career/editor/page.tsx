@@ -222,9 +222,6 @@ export default function CareerEditorPage() {
       if (formAction.salary_max) {
         formData.append("salary_max", formAction.salary_max);
       }
-      if (formAction.salary_currency) {
-        formData.append("salary_currency", formAction.salary_currency);
-      }
 
       if (formAction.vacancies) {
         formData.append("vacancies", formAction.vacancies);

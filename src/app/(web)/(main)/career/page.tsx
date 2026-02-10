@@ -15,10 +15,8 @@ import {
   MapPin,
   Clock,
   DollarSign,
-  Eye,
 } from "lucide-react";
 import { Tooltip } from "antd";
-import dayjs from "dayjs";
 
 import Notification from "@/components/Notification";
 import { StyledSelect } from "@/components/StyledSelect";
@@ -42,14 +40,6 @@ const EXPERIENCE_LEVELS = [
   { value: "SENIOR", label: "Senior Level" },
   { value: "LEAD", label: "Lead" },
   { value: "EXECUTIVE", label: "Executive" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "All", label: "All Status" },
-  { value: "DRAFT", label: "Draft" },
-  { value: "PUBLISHED", label: "Published" },
-  { value: "CLOSED", label: "Closed" },
-  { value: "ARCHIVED", label: "Archived" },
 ];
 
 const SORT_OPTIONS = [
@@ -84,8 +74,8 @@ export default function CareerPage() {
     refetch,
   } = useCareers({
     job_type: selectedJobType !== "All" ? selectedJobType : undefined,
-    experience_level: selectedExperience !== "All" ? selectedExperience : undefined,
-    status: selectedStatus !== "All" ? selectedStatus : undefined,
+    experience_level:
+      selectedExperience !== "All" ? selectedExperience : undefined,
     search: debouncedSearchTerm || undefined,
     sort_order: sortOrder,
   });
@@ -122,15 +112,15 @@ export default function CareerPage() {
             <span
               className={`px-3 py-1 text-xs font-medium rounded-full ${
                 career.status === "PUBLISHED"
-                  ? "bg-green-950 text-green-400"
+                  ? "bg-green-100 text-green-700"
                   : career.status === "DRAFT"
-                  ? "bg-yellow-950 text-yellow-400"
-                  : career.status === "CLOSED"
-                  ? "bg-gray-100 text-gray-600"
-                  : "bg-gray-200 text-gray-600"
+                    ? "bg-yellow-950 text-yellow-400"
+                    : career.status === "CLOSED"
+                      ? "bg-gray-100 text-gray-600"
+                      : "bg-gray-200 text-gray-600"
               }`}
             >
-              {career.status?.toLowerCase()}
+              {career.status}
             </span>
           </div>
 
@@ -149,7 +139,7 @@ export default function CareerPage() {
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
                 <span>
-                  {career.salary_currency} {career.salary_min.toLocaleString()} -{" "}
+                  IDR {career.salary_min.toLocaleString()} -{" "}
                   {career.salary_max.toLocaleString()}
                 </span>
               </div>
@@ -157,7 +147,10 @@ export default function CareerPage() {
             <div className="flex items-center justify-between pt-2 border-t border-gray-200">
               <div className="flex items-center gap-1">
                 <Briefcase className="w-4 h-4" />
-                <span>{career.vacancies || 1} Vacanc{career.vacancies > 1 ? 'ies' : 'y'}</span>
+                <span>
+                  {career.vacancies || 1} Vacanc
+                  {career.vacancies > 1 ? "ies" : "y"}
+                </span>
               </div>
             </div>
           </div>
@@ -170,18 +163,18 @@ export default function CareerPage() {
               <Edit className="w-4 h-4" />
               Edit
             </button>
-            <button
+            {/* <button
               onClick={() => router.push(`/career/applicants/${career._id}`)}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
             >
               <Users className="w-4 h-4" />
               View Applicants
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 setSelected(career._id);
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-gray-200 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -197,7 +190,9 @@ export default function CareerPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Careers</h1>
-          <p className="text-gray-600 mt-1">Manage job postings and applications</p>
+          <p className="text-gray-600 mt-1">
+            Manage job postings and applications
+          </p>
         </div>
         <button
           onClick={() => router.push("/career/editor")}
@@ -258,16 +253,6 @@ export default function CareerPage() {
                   }}
                   options={EXPERIENCE_LEVELS}
                   label="Experience Level"
-                />
-
-                <StyledSelect
-                  value={filterForm.status}
-                  onChange={(val) => {
-                    setFilterForm((prev) => ({ ...prev, status: val }));
-                    setSelectedStatus(val);
-                  }}
-                  options={STATUS_OPTIONS}
-                  label="Status"
                 />
 
                 <StyledSelect
@@ -414,7 +399,10 @@ export default function CareerPage() {
             No job postings found
           </h3>
           <p className="text-gray-600 mb-6">
-            {searchTerm || selectedJobType !== "All" || selectedExperience !== "All" || selectedStatus !== "All"
+            {searchTerm ||
+            selectedJobType !== "All" ||
+            selectedExperience !== "All" ||
+            selectedStatus !== "All"
               ? "Try adjusting your search or filters"
               : "Get started by creating your first job posting"}
           </p>
