@@ -30,7 +30,7 @@ export const useSchedules = (product_id?: string): UseQueryResult<any> => {
 
 export const useSchedulesDetail = (param: string): UseQueryResult<any> => {
   return useQuery({
-    queryKey: ["schedule_detail"],
+    queryKey: ["schedule_detail", param],
     queryFn: async () => {
       try {
         const { data, status } = await ScheduleDetailService(param);

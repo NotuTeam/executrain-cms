@@ -46,7 +46,7 @@ export default function SocialMediaTab() {
           onError: () => {
             Notification("error", "Failed to update social media");
           },
-        }
+        },
       );
     } catch (e) {
       console.log(e);
@@ -70,18 +70,14 @@ export default function SocialMediaTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 p-4 bg-primary-950 rounded-xl border border-blue-200">
-        <div>
-          <h3 className="font-semibold text-blue-900">
-            Social Media Management
-          </h3>
-          <p className="text-sm text-primary-400">
-            Update your social media links. Leave link empty to hide from
-            website.
-          </p>
-        </div>
+      <div className="flex flex-col p-4 bg-primary-50 rounded-xl border border-primary-200">
+        <h3 className="font-semibold text-primary-700">
+          Social Media Management
+        </h3>
+        <p className="text-sm text-primary-400">
+          Update your social media links. Leave link empty to hide from website.
+        </p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {socmeds.map((socmed: any) => (
           <div

@@ -106,11 +106,11 @@ export default function AssetsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
-        <Image className="w-5 h-5 text-indigo-600" />
+      <div className="flex items-center gap-3 p-4 bg-primary-100 rounded-xl border border-primary-200">
+        <Image className="w-5 h-5 text-primary-600" />
         <div>
-          <h3 className="font-semibold text-indigo-900">Dynamic Assets</h3>
-          <p className="text-sm text-indigo-700">
+          <h3 className="font-semibold text-primary-600">Dynamic Assets</h3>
+          <p className="text-sm text-primary-600">
             Manage website background images and media. Files are uploaded
             directly to Cloudinary (max 10MB for images, 100MB for videos).
           </p>

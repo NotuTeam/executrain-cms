@@ -3,23 +3,19 @@
 "use client";
 
 import { useState } from "react";
-import { Tag, Modal } from "antd";
-import { Edit, Trash2, Plus, Eye, Search } from "lucide-react";
+import { Tag, Modal, Tooltip } from "antd";
+import { Edit, Trash2, Plus, Eye } from "lucide-react";
 
 import { useMetadataList, useDeleteMetadata } from "./hook";
-import { useDebounce } from "@/hooks/useDebounce";
 
 import MetadataForm from "./components/MetadataForm";
 import Notification from "@/components/Notification";
 
 export default function MetadataPage() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMetadata, setSelectedMetadata] = useState<any>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
-
-  const debouncedSearchName = useDebounce(searchTerm, 500);
 
   const { data, isLoading, refetch } = useMetadataList();
   const { mutate: deleteMetadata, isPending: isDeleting } = useDeleteMetadata();
@@ -78,41 +74,12 @@ export default function MetadataPage() {
       </div>
 
       {/* Info Box */}
-      <div className="bg-primary-950 border border-primary-900 rounded-xl p-4">
-        <p className="text-primary-300 text-sm">
+      <div className="border-primary-300 border bg-primary-100 rounded-xl p-4">
+        <p className="text-primary-700  text-sm">
           <span className="font-semibold">Tip:</span> Update metadata to improve
           SEO performance. Published metadata will be visible on the website.
         </p>
       </div>
-      {/* 
-      <div className="bg-white rounded-2xl p-6 border border-gray-200">
-        <div className="flex items-center gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
-            <input
-              type="text"
-              placeholder="Search by page name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-gray-100 text-gray-900 placeholder:text-gray-600"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-        {debouncedSearchName && (
-          <p className="text-sm text-gray-600 mt-2">
-            Searching for:{" "}
-            <span className="font-medium">{debouncedSearchName}</span>
-          </p>
-        )}
-      </div> */}
 
       {isLoading ? (
         <div className="animate-pulse bg-gray-100 w-full min-h-[30dvh] rounded-xl"></div>
@@ -148,10 +115,8 @@ export default function MetadataPage() {
               <tbody className="divide-y divide-slate-800">
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center text-gray-600">
-                      {debouncedSearchName
-                        ? "No users found matching your search"
-                        : "No users found"}
+                    <td colSpan={7} className="py-8 text-center text-gray-600">
+                      No metadata found
                     </td>
                   </tr>
                 ) : (
@@ -218,25 +183,31 @@ export default function MetadataPage() {
                       </td>
                       <td className="py-4 px-6">
                         <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handlePreview(metadata)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                          >
-                            <Eye className="w-4 h-4 text-blue-400" />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(metadata)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                          >
-                            <Edit className="w-4 h-4 text-gray-600" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(metadata?._id)}
-                            type="button"
-                            className="p-2 hover:bg-primary-950 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4 text-blue-400" />
-                          </button>
+                          <Tooltip title="Preview Metadata" placement="top">
+                            <button
+                              onClick={() => handlePreview(metadata)}
+                              className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                            >
+                              <Eye className="w-4 h-4 text-blue-400" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Edit Metadata" placement="top">
+                            <button
+                              onClick={() => handleEdit(metadata)}
+                              className="p-2 hover:bg-yellow-100 rounded-lg transition-colors"
+                            >
+                              <Edit className="w-4 h-4 text-yellow-600" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Delete Metadata" placement="top">
+                            <button
+                              onClick={() => handleDelete(metadata?._id)}
+                              type="button"
+                              className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </button>
+                          </Tooltip>
                         </div>
                       </td>
                     </tr>

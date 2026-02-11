@@ -20,12 +20,15 @@ export const useMetadataList = (): UseQueryResult<any> => {
     queryKey: ["metadata_list"],
     queryFn: async () => {
       try {
-        const { data, status } = await MetadataListService();
+        const response = await MetadataListService();
 
-        if (status !== 200) throw new Error();
+        if (response.status === 200) {
+          return response.data || [];
+        }
 
-        return data;
+        return [];
       } catch (e) {
+        console.error("Error fetching metadata list:", e);
         return [];
       }
     },
@@ -38,12 +41,16 @@ export const useMetadataDetail = (id: string): UseQueryResult<any> => {
     queryKey: ["metadata_detail", id],
     queryFn: async () => {
       try {
-        const { data, status } = await MetadataDetailService(id);
+        const response = await MetadataDetailService(id);
+        console.log("MetadataDetailService response:", response);
 
-        if (status !== 200) throw new Error();
+        if (response.status === 200) {
+          return response.data;
+        }
 
-        return data;
+        return null;
       } catch (e) {
+        console.error("Error fetching metadata detail:", e);
         return null;
       }
     },
@@ -57,12 +64,16 @@ export const useMetadataByPage = (page: string): UseQueryResult<any> => {
     queryKey: ["metadata_by_page", page],
     queryFn: async () => {
       try {
-        const { data, status } = await MetadataByPageService(page);
+        const response = await MetadataByPageService(page);
+        console.log("MetadataByPageService response:", response);
 
-        if (status !== 200) throw new Error();
+        if (response.status === 200) {
+          return response.data;
+        }
 
-        return data;
+        return null;
       } catch (e) {
+        console.error("Error fetching metadata by page:", e);
         return null;
       }
     },
@@ -78,11 +89,13 @@ export const useCreateMetadata = () => {
       try {
         const response: any = await CreateMetadata(payload);
 
-        if (response.status !== 201) throw new Error(response.message);
-
-        return {
-          data: response.data,
-        };
+        if (response.status === 200) {
+          return {
+            data: response.data,
+          };
+        } else {
+          throw new Error(response.message || "Failed to Add Metadata");
+        }
       } catch (error: any) {
         throw new Error(error.message || "Failed to Add Metadata");
       }
@@ -97,11 +110,13 @@ export const useUpdateMetadata = () => {
       try {
         const response: any = await UpdateMetadata(id, data);
 
-        if (response.status !== 200) throw new Error(response.message);
-
-        return {
-          data: response.data,
-        };
+        if (response.status === 200) {
+          return {
+            data: response.data,
+          };
+        } else {
+          throw new Error(response.message || "Failed to Update Metadata");
+        }
       } catch (error: any) {
         throw new Error(error.message || "Failed to Update Metadata");
       }
@@ -116,11 +131,13 @@ export const usePublishMetadata = () => {
       try {
         const response: any = await PublishMetadata(id, status);
 
-        if (response.status !== 200) throw new Error(response.message);
-
-        return {
-          data: response.data,
-        };
+        if (response.status === 200) {
+          return {
+            data: response.data,
+          };
+        } else {
+          throw new Error(response.message || "Failed to Publish Metadata");
+        }
       } catch (error: any) {
         throw new Error(error.message || "Failed to Publish Metadata");
       }
@@ -135,11 +152,13 @@ export const useDeleteMetadata = () => {
       try {
         const response: any = await DeleteMetadata(id);
 
-        if (response.status !== 200) throw new Error(response.message);
-
-        return {
-          data: response.data,
-        };
+        if (response.status === 200) {
+          return {
+            data: response.data,
+          };
+        } else {
+          throw new Error(response.message || "Failed to Delete Metadata");
+        }
       } catch (error: any) {
         throw new Error(error.message || "Failed to Delete Metadata");
       }

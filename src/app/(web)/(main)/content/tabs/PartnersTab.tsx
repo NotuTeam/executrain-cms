@@ -124,10 +124,9 @@ export default function PartnersTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 p-4 bg-primary-950 rounded-xl border border-blue-200">
-          <div>
-            <h3 className="font-semibold text-blue-900">Partner Management</h3>
-          </div>
+        <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-xl border border-primary-200">
+          <Building2 className="w-5 h-5 text-primary-600" />
+          <h3 className="font-semibold text-primary-700">Partner Management</h3>
         </div>
         <button
           onClick={() => setShowModal("INPUT")}

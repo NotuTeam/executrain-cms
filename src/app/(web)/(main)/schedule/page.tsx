@@ -6,14 +6,12 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  Plus,
   Download,
   Upload,
   ChevronLeft,
   ChevronRight,
   Edit,
   MapPin,
-  Users,
   Clock,
   X,
   Trash2,
@@ -21,10 +19,10 @@ import {
 } from "lucide-react";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
-import { Select } from "antd";
+import { Tooltip } from "antd";
 
 import Notification from "@/components/Notification";
-import { formatDuration } from "@/lib/utils";
+import { StyledSelect } from "@/components/StyledSelect";
 
 import { useSchedules, useDelete, useCreateBulkSchedule } from "./hook";
 import { useProducts } from "../product/hook";
@@ -32,22 +30,29 @@ import { useProducts } from "../product/hook";
 export default function SchedulePage() {
   const router = useRouter();
 
-  const [selected, setSelected] = useState(null);
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [uploadedSchedules, setUploadedSchedules] = useState<any[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
+  const [selectedProductId, setSelectedProductId] = useState<
+    string | undefined
+  >(undefined);
   const [showProductFilter, setShowProductFilter] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [importModalProductId, setImportModalProductId] = useState<string | undefined>(undefined);
+  const [importModalProductId, setImportModalProductId] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedScheduleId, setSelectedScheduleId] = useState<
+    string | null
+  >(null);
   const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: schedules = [], refetch } = useSchedules(selectedProductId);
   const { data: productsData } = useProducts();
-  const { mutate: createSchedule, isPending: isCreating } = useCreateBulkSchedule();
+  const { mutate: createSchedule, isPending: isCreating } =
+    useCreateBulkSchedule();
   const { mutate: deleteSchedule, isPending } = useDelete();
 
   const products = productsData?.pages?.flatMap((page: any) => page.data) || [];
@@ -69,62 +74,52 @@ export default function SchedulePage() {
     return days;
   };
 
-  const getEventsForDate = (date: dayjs.Dayjs) => {
-    if (!schedules || schedules.length === 0) return [];
+  const getEventsForDate = useCallback(
+    (date: dayjs.Dayjs) => {
+      if (!schedules || schedules.length === 0) return [];
 
-    return schedules.filter((schedule: any) => {
-      const scheduleDate = dayjs(schedule.schedule_date);
-      return scheduleDate.isSame(date, "day");
-    });
-  };
+      return schedules.filter((schedule: any) => {
+        // Ensure schedule_date is valid
+        if (!schedule.schedule_date) return false;
 
-  const handleMouseEnter = useCallback((date: dayjs.Dayjs, e: React.MouseEvent) => {
-    // Clear existing timeout if any
-    if (popupTimeoutRef.current) {
-      clearTimeout(popupTimeoutRef.current);
-      popupTimeoutRef.current = null;
-    }
+        const scheduleDate = dayjs(schedule.schedule_date);
+        if (!scheduleDate.isValid()) return false;
 
-    const events = getEventsForDate(date);
-    if (events.length > 0) {
-      console.log('Showing popup for:', date.format('YYYY-MM-DD'), 'with', events.length, 'events');
-      setHoveredDate(date.format("YYYY-MM-DD"));
-      const rect = e.currentTarget.getBoundingClientRect();
-      const calendarContainer = e.currentTarget.closest('.bg-white') as HTMLElement;
-      
-      if (calendarContainer) {
-        const containerRect = calendarContainer.getBoundingClientRect();
-        setPopupPosition({ 
-          x: rect.left - containerRect.left,
-          y: rect.bottom - containerRect.top
-        });
+        // Compare dates by formatting to YYYY-MM-DD to avoid timezone issues
+        return scheduleDate.format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
+      });
+    },
+    [schedules],
+  );
+
+  const handleDateClick = useCallback(
+    (date: dayjs.Dayjs, e: React.MouseEvent) => {
+      // Clear existing timeout if any
+      if (popupTimeoutRef.current) {
+        clearTimeout(popupTimeoutRef.current);
+        popupTimeoutRef.current = null;
       }
-    }
-  }, []);
 
-  const handleDateClick = useCallback((date: dayjs.Dayjs, e: React.MouseEvent) => {
-    // Clear existing timeout if any
-    if (popupTimeoutRef.current) {
-      clearTimeout(popupTimeoutRef.current);
-      popupTimeoutRef.current = null;
-    }
+      const events = getEventsForDate(date);
+      if (events.length > 0) {
+        setHoveredDate(date.format("YYYY-MM-DD"));
+        const rect = e.currentTarget.getBoundingClientRect();
+        const calendarContainer = e.currentTarget.closest(
+          ".bg-white",
+        ) as HTMLElement;
 
-    const events = getEventsForDate(date);
-    if (events.length > 0) {
-      console.log('Showing popup for:', date.format('YYYY-MM-DD'), 'with', events.length, 'events');
-      setHoveredDate(date.format("YYYY-MM-DD"));
-      const rect = e.currentTarget.getBoundingClientRect();
-      const calendarContainer = e.currentTarget.closest('.bg-white') as HTMLElement;
-      
-      if (calendarContainer) {
-        const containerRect = calendarContainer.getBoundingClientRect();
-        setPopupPosition({ 
-          x: rect.left - containerRect.left,
-          y: rect.bottom - containerRect.top
-        });
+        if (calendarContainer) {
+          const containerRect = calendarContainer.getBoundingClientRect();
+          // Adjust position to be closer to the clicked date (add 4px gap)
+          setPopupPosition({
+            x: rect.left - containerRect.left,
+            y: rect.bottom - containerRect.top + 4, // Add 4px gap
+          });
+        }
       }
-    }
-  }, []); // Empty deps because getEventsForDate uses schedules from closure
+    },
+    [getEventsForDate],
+  );
 
   const handlePopupMouseLeave = useCallback(() => {
     // Close popup when mouse leaves popup area
@@ -144,9 +139,9 @@ export default function SchedulePage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      const calendarContainer = target.closest('.bg-white.border');
-      const popup = target.closest('.absolute.bg-white.z-50');
-      
+      const calendarContainer = target.closest(".bg-white.border");
+      const popup = target.closest(".absolute.bg-white.z-50");
+
       // Close if click is outside both calendar and popup
       if (!calendarContainer && !popup && hoveredDate) {
         setHoveredDate(null);
@@ -154,9 +149,9 @@ export default function SchedulePage() {
     };
 
     if (hoveredDate) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [hoveredDate]);
@@ -174,11 +169,7 @@ export default function SchedulePage() {
       "location",
       "quota",
       "duration",
-      "link",
       "is_assestment",
-      "benefits",
-      "skill_level",
-      "language",
       "status",
     ];
 
@@ -192,11 +183,7 @@ export default function SchedulePage() {
       "Jakarta Convention Center",
       "30",
       "480",
-      "https://forms.google.com/react-workshop-registration",
       "y/n",
-      "Certificate|Lunch|Materials",
-      "BEGINNER/INTERMEDIATE/EXPERT",
-      "INDONESIA/INGGRIS",
       "OPEN_SEAT/FULL_BOOKED",
     ];
 
@@ -214,12 +201,8 @@ export default function SchedulePage() {
       { wch: 30 }, // location
       { wch: 10 }, // quota
       { wch: 10 }, // duration
-      { wch: 50 }, // link
       { wch: 15 }, // is_assestment
-      { wch: 40 }, // benefits
-      { wch: 15 }, // skill_level
-      { wch: 15 }, // language
-      { wch: 15 }, // status
+      { wch: 30 }, // status
     ];
     ws["!cols"] = colWidths;
 
@@ -275,11 +258,7 @@ export default function SchedulePage() {
               "location",
               "quota",
               "duration",
-              "link",
               "is_assestment",
-              "benefits",
-              "skill_level",
-              "language",
               "status",
             ];
 
@@ -290,7 +269,6 @@ export default function SchedulePage() {
 
                 columnMapping.forEach((field, colIndex) => {
                   const value = row[colIndex];
-                  console.log(field, value);
                   if (value !== undefined && value !== null && value !== "") {
                     if (
                       (field === "schedule_date" ||
@@ -305,12 +283,26 @@ export default function SchedulePage() {
                       scheduleData[field] = parsedDate.isValid()
                         ? parsedDate.toDate()
                         : value;
-                    } else if (field === "benefits" && typeof value === "string") {
-                      scheduleData[field] = value.split("|").map((b) => b.trim());
                     } else if (field === "is_assestment") {
                       scheduleData[field] =
                         value.toLowerCase() === "y" ||
                         value.toLowerCase() === "yes";
+                    } else if (field === "status") {
+                      // Map user-friendly status to enum values
+                      const statusStr = value
+                        .toString()
+                        .toUpperCase()
+                        .replace(/\s+/g, "_");
+                      if (
+                        statusStr === "OPEN_SEAT" ||
+                        statusStr === "FULL_BOOKED" ||
+                        statusStr === "OPEN SEAT" ||
+                        statusStr === "FULL BOOKED"
+                      ) {
+                        scheduleData[field] = statusStr.replace(/\s+/g, "_");
+                      } else {
+                        scheduleData[field] = "OPEN_SEAT"; // Default value
+                      }
                     } else if (field === "quota" || field === "duration") {
                       scheduleData[field] = parseInt(value) || 0;
                     } else {
@@ -325,7 +317,7 @@ export default function SchedulePage() {
             setUploadedSchedules(newSchedules);
             Notification(
               "success",
-              `Successfully imported ${newSchedules.length} schedules for product: ${products.find((p: any) => p._id === importModalProductId)?.product_name}. Please review before importing.`
+              `Successfully imported ${newSchedules.length} schedules for product: ${products.find((p: any) => p._id === importModalProductId)?.product_name}. Please review before importing.`,
             );
           } catch (error) {
             console.error(error);
@@ -357,7 +349,7 @@ export default function SchedulePage() {
         onError: (error: any) => {
           Notification("error", error.message || "Failed to import schedules");
         },
-      }
+      },
     );
   };
 
@@ -369,18 +361,23 @@ export default function SchedulePage() {
   };
 
   const handleDeleteSchedule = (id: string) => {
-    // Konfirmasi sebelum delete
-    if (window.confirm("Are you sure you want to delete this schedule? This action cannot be undone.")) {
-      deleteSchedule(id, {
-        onSuccess: () => {
-          Notification("success", "Schedule deleted successfully");
-          refetch();
-        },
-        onError: (error: any) => {
-          Notification("error", error.message || "Failed to delete schedule");
-        },
-      });
-    }
+    setSelectedScheduleId(id);
+  };
+
+  const confirmDeleteSchedule = () => {
+    if (!selectedScheduleId) return;
+
+    deleteSchedule(selectedScheduleId, {
+      onSuccess: () => {
+        Notification("success", "Schedule deleted successfully");
+        refetch();
+        setSelectedScheduleId(null);
+      },
+      onError: (error: any) => {
+        Notification("error", error.message || "Failed to delete schedule");
+        setSelectedScheduleId(null);
+      },
+    });
   };
 
   const calendarDays = generateCalendarDays();
@@ -392,7 +389,9 @@ export default function SchedulePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Schedule</h1>
-          <p className="text-gray-600 mt-1">Manage training schedules and events</p>
+          <p className="text-gray-600 mt-1">
+            Manage training schedules and events
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -467,7 +466,9 @@ export default function SchedulePage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Import Schedules</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Import Schedules
+                </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   Select a product and upload schedule data from Excel file
                 </p>
@@ -484,25 +485,30 @@ export default function SchedulePage() {
             <div className="p-6 space-y-6">
               {/* Product Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Product <span className="text-red-500">*</span>
-                </label>
-                <select
+                <StyledSelect
+                  label="Select Product"
                   value={importModalProductId || ""}
-                  onChange={(e) => setImportModalProductId(e.target.value || undefined)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                  required
-                >
-                  <option value="">Choose a product...</option>
-                  {products.map((product: any) => (
-                    <option key={product._id} value={product._id}>
-                      {product.product_name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) =>
+                    setImportModalProductId(value || undefined)
+                  }
+                  options={[
+                    { value: "", label: "Choose a product..." },
+                    ...products.map((product: any) => ({
+                      value: product._id,
+                      label: product.product_name,
+                    })),
+                  ]}
+                />
                 {importModalProductId && (
                   <p className="text-sm text-gray-600 mt-2">
-                    Selected: <strong>{products.find((p: any) => p._id === importModalProductId)?.product_name}</strong>
+                    Selected:{" "}
+                    <strong>
+                      {
+                        products.find(
+                          (p: any) => p._id === importModalProductId,
+                        )?.product_name
+                      }
+                    </strong>
                   </p>
                 )}
               </div>
@@ -515,8 +521,12 @@ export default function SchedulePage() {
                   </label>
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                     <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Click to upload Excel file</p>
-                    <p className="text-xs text-gray-500 mt-1">.xlsx or .xls files</p>
+                    <p className="text-sm text-gray-600">
+                      Click to upload Excel file
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      .xlsx or .xls files
+                    </p>
                     <input
                       type="file"
                       accept=".xlsx, .xls"
@@ -536,7 +546,12 @@ export default function SchedulePage() {
                       {uploadedSchedules.length} Schedules Ready to Import
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      Product: {products.find((p: any) => p._id === importModalProductId)?.product_name}
+                      Product:{" "}
+                      {
+                        products.find(
+                          (p: any) => p._id === importModalProductId,
+                        )?.product_name
+                      }
                     </p>
                   </div>
 
@@ -565,7 +580,9 @@ export default function SchedulePage() {
                               {schedule.schedule_name}
                             </td>
                             <td className="px-4 py-2 text-sm text-gray-600">
-                              {dayjs(schedule.schedule_date).format("YYYY-MM-DD")}
+                              {dayjs(schedule.schedule_date).format(
+                                "YYYY-MM-DD",
+                              )}
                             </td>
                             <td className="px-4 py-2 text-sm text-gray-600">
                               {schedule.location}
@@ -602,7 +619,11 @@ export default function SchedulePage() {
               )}
               <button
                 onClick={handleConfirmImport}
-                disabled={isCreating || !importModalProductId || uploadedSchedules.length === 0}
+                disabled={
+                  isCreating ||
+                  !importModalProductId ||
+                  uploadedSchedules.length === 0
+                }
                 className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isCreating ? "Importing..." : "Import Schedules"}
@@ -760,61 +781,107 @@ export default function SchedulePage() {
         {/* Popup for clicked date - INSIDE calendar div */}
         {hoveredDate && (
           <div
-            className="absolute bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50"
+            className="absolute bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-80"
             style={{
               left: `${popupPosition.x}px`,
               top: `${popupPosition.y}px`,
             }}
             onMouseLeave={handlePopupMouseLeave}
           >
-            <h3 className="font-semibold text-gray-900 mb-2">
-              {dayjs(hoveredDate).format("MMMM D, YYYY")}
-            </h3>
-          <div className="space-y-2">
-            {getEventsForDate(dayjs(hoveredDate)).map((event: any, idx: number) => (
-              <div
-                key={idx}
-                className="p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="text-sm font-medium text-gray-900">
-                      {event.schedule_name}
-                    </h4>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {event.schedule_start} - {event.schedule_end}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {event.location}
-                      </span>
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-semibold text-gray-900">
+                {dayjs(hoveredDate).format("MMMM D, YYYY")}
+              </h3>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              <div className="p-4 space-y-2">
+                {getEventsForDate(dayjs(hoveredDate)).map(
+                  (event: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                            {event.schedule_name}
+                          </h4>
+                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">
+                                {event.schedule_start} - {event.schedule_end}
+                              </span>
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate">
+                                {event.location}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                          <Tooltip title="Edit Schedule" placement="top">
+                            <button
+                              onClick={() =>
+                                router.push(`/schedule/editor?id=${event._id}`)
+                              }
+                              className="p-1 hover:bg-gray-200 rounded transition-colors"
+                            >
+                              <Edit className="w-3 h-3 text-gray-600" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Delete Schedule" placement="top">
+                            <button
+                              onClick={() => handleDeleteSchedule(event._id)}
+                              className="p-1 hover:bg-red-100 rounded transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3 text-red-600" />
+                            </button>
+                          </Tooltip>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => router.push(`/schedule/editor/${event._id}`)}
-                      className="p-1 hover:bg-gray-200 rounded transition-colors"
-                      title="Edit Schedule"
-                    >
-                      <Edit className="w-3 h-3 text-gray-600" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteSchedule(event._id)}
-                      className="p-1 hover:bg-red-100 rounded transition-colors"
-                      title="Delete Schedule"
-                    >
-                      <Trash2 className="w-3 h-3 text-red-600" />
-                    </button>
-                  </div>
-                </div>
+                  ),
+                )}
               </div>
-            ))}
+            </div>
           </div>
-        </div>
         )}
       </div>
-      </div>
+
+      {/* Delete Confirmation Modal */}
+      {selectedScheduleId ? (
+        <div className="fixed bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 top-0 right-0 left-0 bottom-0 m-0">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Delete Schedule
+            </h2>
+            <p>Are you sure you want to delete this schedule?</p>
+            <div className="flex gap-5 mt-8 justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedScheduleId(null);
+                }}
+                className="flex items-center justify-center gap-2 px-10 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                disabled={isPending}
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteSchedule}
+                className="px-10 py-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isPending}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

@@ -8,8 +8,6 @@ import {
   Save,
   TrendingUp,
   Edit2,
-  X,
-  Check,
   Award,
   Users,
   BookOpen,
@@ -116,9 +114,9 @@ export default function StatisticsTab() {
   const getColorClasses = (color: string) => {
     const colors: any = {
       blue: {
-        bg: "bg-primary-950",
+        bg: "bg-blue-50",
         border: "border-blue-200",
-        text: "text-primary-500",
+        text: "text-blue-500",
         hover: "hover:border-blue-300",
         icon: "bg-blue-100",
       },
@@ -163,7 +161,7 @@ export default function StatisticsTab() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-xl border border-primary-200">
           <TrendingUp className="w-5 h-5 text-primary-600" />
-          <h3 className="font-semibold text-blue-900">Website Statistics</h3>
+          <h3 className="font-semibold text-primary-700">Company Statistic</h3>
         </div>
 
         <button
